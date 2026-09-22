@@ -82,14 +82,34 @@
 .elev-peak-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; fill: var(--green-deep, var(--green)); font-weight: 700; }
 
 .wp-list { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
-.wp-item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; cursor: pointer; transition: background .12s ease; }
-.wp-item:hover, .wp-item:focus-visible, .wp-item.active { background: var(--surface-2); outline: none; }
+.wp-item { border-radius: 10px; overflow: hidden; }
+.wp-item-toggle {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10px;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  transition: background .12s ease;
+}
+.wp-item-toggle:hover, .wp-item-toggle:focus-visible, .wp-item.active .wp-item-toggle { background: var(--surface-2); outline: none; }
 .wp-item-num { flex: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--green-deep, var(--green)); border: 1.6px solid var(--accent); background: var(--surface); }
 .wp-item-num.cat-start, .wp-item-num.cat-end { border-color: var(--green); }
 .wp-item.active .wp-item-num { background: var(--gold); border-color: var(--gold); color: #fff; }
-.wp-item-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.wp-item-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
 .wp-item-title { font-size: 14.5px; font-weight: 600; }
 .wp-item-meta { font-size: 11.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.wp-chevron { flex: none; color: var(--text-muted); transition: transform .15s ease; }
+.wp-item-toggle[aria-expanded="true"] .wp-chevron { transform: rotate(180deg); }
+.wp-item-panel { padding: 2px 10px 14px 48px; }
+.wp-item-panel img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; display: block; border: 1px solid var(--border); }
+.wp-item-panel[hidden] { display: none; }
 
 .right-col { display: flex; flex-direction: column; gap: 20px; }
 
@@ -249,47 +269,107 @@
           <span class="card-hint">en orden del recorrido</span>
         </div>
         <ul class="wp-list">
-          <li class="wp-item" data-wp="1" tabindex="0">
+<li class="wp-item" data-wp="1">
+<button class="wp-item-toggle" data-wp="1" aria-expanded="false" aria-controls="wp-panel-1">
 <span class="wp-item-num cat-start">1</span>
 <span class="wp-item-body"><span class="wp-item-title">Intersección</span><span class="wp-item-meta">Inicio · 2699 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-1" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/yoga%20en%20la%20montaña.jpg" alt="Intersección" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="2" tabindex="0">
+<li class="wp-item" data-wp="2">
+<button class="wp-item-toggle" data-wp="2" aria-expanded="false" aria-controls="wp-panel-2">
 <span class="wp-item-num cat-start">2</span>
 <span class="wp-item-body"><span class="wp-item-title">Punto de inicio</span><span class="wp-item-meta">Inicio · 2720 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-2" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/charla%20punto%20de%20inicio.jpg" alt="Punto de inicio" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="3" tabindex="0">
+<li class="wp-item" data-wp="3">
+<button class="wp-item-toggle" data-wp="3" aria-expanded="false" aria-controls="wp-panel-3">
 <span class="wp-item-num cat-nature">3</span>
 <span class="wp-item-body"><span class="wp-item-title">Inicio del bosque</span><span class="wp-item-meta">Naturaleza · 2780 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-3" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/inicio%20bosque.jpg" alt="Inicio del bosque" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="4" tabindex="0">
+<li class="wp-item" data-wp="4">
+<button class="wp-item-toggle" data-wp="4" aria-expanded="false" aria-controls="wp-panel-4">
 <span class="wp-item-num cat-nature">4</span>
 <span class="wp-item-body"><span class="wp-item-title">Cesión yoga</span><span class="wp-item-meta">Naturaleza · 2794 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-4" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/cesión%20yoga.jpg" alt="Cesión yoga" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="5" tabindex="0">
+<li class="wp-item" data-wp="5">
+<button class="wp-item-toggle" data-wp="5" aria-expanded="false" aria-controls="wp-panel-5">
 <span class="wp-item-num cat-door">5</span>
 <span class="wp-item-body"><span class="wp-item-title">Inicio camino juego de tejo</span><span class="wp-item-meta">Refugio · 2802 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-5" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/inicio%20camino%20juego%20de%20tejo.jpg" alt="Inicio camino juego de tejo" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="6" tabindex="0">
+<li class="wp-item" data-wp="6">
+<button class="wp-item-toggle" data-wp="6" aria-expanded="false" aria-controls="wp-panel-6">
 <span class="wp-item-num cat-door">6</span>
 <span class="wp-item-body"><span class="wp-item-title">Casa lluvia de ideas</span><span class="wp-item-meta">Refugio · 2834 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-6" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/casa%20lluvia%20de%20ideas.jpg" alt="Casa lluvia de ideas" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="7" tabindex="0">
+<li class="wp-item" data-wp="7">
+<button class="wp-item-toggle" data-wp="7" aria-expanded="false" aria-controls="wp-panel-7">
 <span class="wp-item-num cat-poi">7</span>
 <span class="wp-item-body"><span class="wp-item-title">Cancha de tejo</span><span class="wp-item-meta">Punto de interés · 2866 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-7" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/cancha%20de%20tejo.jpg" alt="Cancha de tejo" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="8" tabindex="0">
+<li class="wp-item" data-wp="8">
+<button class="wp-item-toggle" data-wp="8" aria-expanded="false" aria-controls="wp-panel-8">
 <span class="wp-item-num cat-poi">8</span>
 <span class="wp-item-body"><span class="wp-item-title">Regreso</span><span class="wp-item-meta">Punto de interés · 2864 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-8" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/regreso.jpg" alt="Regreso" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="9" tabindex="0">
+<li class="wp-item" data-wp="9">
+<button class="wp-item-toggle" data-wp="9" aria-expanded="false" aria-controls="wp-panel-9">
 <span class="wp-item-num cat-poi">9</span>
 <span class="wp-item-body"><span class="wp-item-title">Huerta La Ilusión</span><span class="wp-item-meta">Punto de interés · 2726 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-9" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/huerta%20la%20ilusión.jpg" alt="Huerta La Ilusión" loading="lazy">
+</div>
 </li>
-<li class="wp-item" data-wp="10" tabindex="0">
+<li class="wp-item" data-wp="10">
+<button class="wp-item-toggle" data-wp="10" aria-expanded="false" aria-controls="wp-panel-10">
 <span class="wp-item-num cat-end">10</span>
 <span class="wp-item-body"><span class="wp-item-title">Fin del recorrido</span><span class="wp-item-meta">Fin · 2722 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-10" hidden>
+<img src="Imagenes%20Mapas/Alto%20de%20Fucha%20imagenes/fin%20del%20recorrido.jpg" alt="Fin del recorrido" loading="lazy">
+</div>
 </li>
-        </ul>
+</ul>
       </div>
     </div>
   </div>
@@ -335,6 +415,23 @@
   var listCard = document.querySelector('.wp-list');
   [mapCard, listCard].forEach(function(c){
     if(c) c.addEventListener('mouseleave', clearActive);
+  });
+
+  var toggles = Array.prototype.slice.call(document.querySelectorAll('.wp-item-toggle'));
+  toggles.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var panel = document.getElementById('wp-panel-' + btn.dataset.wp);
+      var isOpen = btn.getAttribute('aria-expanded') === 'true';
+      toggles.forEach(function(other){
+        if (other === btn) return;
+        other.setAttribute('aria-expanded', 'false');
+        var op = document.getElementById('wp-panel-' + other.dataset.wp);
+        if (op) op.hidden = true;
+      });
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if (panel) panel.hidden = isOpen;
+      if (!isOpen && panel) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
   });
 })();
 </script>
