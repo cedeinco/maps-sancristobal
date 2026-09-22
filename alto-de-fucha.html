@@ -90,6 +90,11 @@
 .wp-item-meta { font-size: 11.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 
 .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+.gmap-card { margin-top: 20px; }
+.gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
+.gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
 </style>
 </head>
 <body>
@@ -284,6 +289,16 @@
 </li>
         </ul>
       </div>
+    </div>
+  </div>
+
+  <div class="card gmap-card">
+    <div class="card-head">
+      <span class="card-title">Google Maps</span>
+      <span class="card-hint">mapa interactivo con el trazado real</span>
+    </div>
+    <div class="gmap-embed">
+      <iframe src="https://www.google.com/maps/d/embed?mid=1tX89c4lJ2PGM-SvMgooO9Mi-Au4Ksgw" loading="lazy" allowfullscreen title="Trazado de Alto de Fucha en Google Maps"></iframe>
     </div>
   </div>
 
