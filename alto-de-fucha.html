@@ -49,10 +49,10 @@
 
 .wp { cursor: pointer; outline: none; }
 .wp-halo { fill: var(--surface); opacity: 0.9; transition: r 0.15s ease, opacity .15s ease; }
-.wp-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; transition: transform .15s ease; transform-origin: center; }
+.wp-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; transition: r .15s ease; r: 8.5px; }
 .wp-icon { color: var(--green); pointer-events: none; }
 .wp-num { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; fill: var(--green-deep, var(--green)); opacity: 0; transition: opacity .15s ease; pointer-events: none; }
-.wp:hover .wp-dot, .wp:focus-visible .wp-dot, .wp.active .wp-dot { transform: scale(1.28); }
+.wp:hover .wp-dot, .wp:focus-visible .wp-dot, .wp.active .wp-dot { r: 10.8px; }
 .wp:hover .wp-num, .wp:focus-visible .wp-num, .wp.active .wp-num { opacity: 1; }
 .wp.active .wp-dot { stroke: var(--gold); fill: var(--gold); }
 .wp.active .wp-icon { color: #fff; }
