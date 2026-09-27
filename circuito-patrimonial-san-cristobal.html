@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circuito Patrimonial San Cristóbal · Rutas San Cristóbal</title>
+<meta name="description" content="Circuito patrimonial a pie por edificaciones, casonas, templos y plazas históricas de los barrios obreros de San Cristóbal, Bogotá: trazado, perfil de elevación y puntos de referencia.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="style.css">
+<style>
+.breadcrumb {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: -6px 0 16px;
+}
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.subtitle { max-width: 72ch; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.stat { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
+.stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.stat-value { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat-value small { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.stat.difficulty .stat-value { color: #3f7d3f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stat.difficulty .stat-value { color: #8fd98f; } }
+:root[data-theme="dark"] .stat.difficulty .stat-value { color: #8fd98f; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+.map-figure { background: linear-gradient(160deg, var(--map-bg-1), var(--map-bg-2)); position: relative; }
+.map-svg { display: block; width: 100%; height: auto; }
+.contour { fill: none; stroke: var(--map-contour); stroke-width: 1; }
+.trail-line-halo { fill: none; stroke: var(--surface); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
+.trail-line { fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.dir-arrow { fill: var(--accent); opacity: 0.85; }
+
+.wp { cursor: pointer; outline: none; }
+.wp-halo { fill: var(--surface); opacity: 0.9; transition: r 0.15s ease, opacity .15s ease; }
+.wp-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; transition: r .15s ease; r: 8.5px; }
+.wp-icon { color: var(--green); pointer-events: none; }
+.wp-num { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; fill: var(--green-deep, var(--green)); opacity: 0; transition: opacity .15s ease; pointer-events: none; }
+.wp:hover .wp-dot, .wp:focus-visible .wp-dot, .wp.active .wp-dot { r: 10.8px; }
+.wp:hover .wp-num, .wp:focus-visible .wp-num, .wp.active .wp-num { opacity: 1; }
+.wp.active .wp-dot { stroke: var(--gold); fill: var(--gold); }
+.wp.active .wp-icon { color: #fff; }
+.wp-start .wp-dot, .wp-end .wp-dot { stroke: var(--green); }
+.wp-start .wp-icon, .wp-end .wp-icon { color: var(--green); }
+.wp-start.active .wp-dot, .wp-end.active .wp-dot { stroke: var(--gold); fill: var(--gold); }
+.wp-start.active .wp-icon, .wp-end.active .wp-icon { color: #fff; }
+
+.compass { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: var(--text); font-weight: 700; }
+.compass-line { stroke: var(--text); stroke-width: 1.4; }
+.scalebar-line { stroke: var(--text); stroke-width: 1.6; }
+.scalebar-text { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text); }
+
+.map-caption { padding: 10px 18px 14px; font-size: 12px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.map-caption span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; border: 2px solid var(--accent); background: var(--surface); }
+.legend-dot.start { background: var(--green); border-color: var(--green); }
+
+.elev-figure { padding: 6px 8px 0; }
+.elev-svg { display: block; width: 100%; height: auto; }
+.elev-area { fill: url(#elevFill); }
+.elev-line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; }
+.elev-grid { stroke: var(--border); stroke-width: 1; }
+.elev-axis-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text-muted); }
+.ec-wp { fill: var(--surface); stroke: var(--accent); stroke-width: 2; cursor: pointer; transition: r .15s ease, fill .15s ease; }
+.ec-wp:hover, .ec-wp.active { fill: var(--gold); stroke: var(--gold); r: 6; }
+.elev-peak-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; fill: var(--green-deep, var(--green)); font-weight: 700; }
+
+.wp-list { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.wp-item { border-radius: 10px; overflow: hidden; }
+.wp-item-toggle {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10px;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  transition: background .12s ease;
+}
+.wp-item-toggle:hover, .wp-item-toggle:focus-visible, .wp-item.active .wp-item-toggle { background: var(--surface-2); outline: none; }
+.wp-item-num { flex: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--green-deep, var(--green)); border: 1.6px solid var(--accent); background: var(--surface); }
+.wp-item-num.cat-start, .wp-item-num.cat-end { border-color: var(--green); }
+.wp-item.active .wp-item-num { background: var(--gold); border-color: var(--gold); color: #fff; }
+.wp-item-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.wp-item-title { font-size: 14.5px; font-weight: 600; }
+.wp-item-meta { font-size: 11.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.wp-chevron { flex: none; color: var(--text-muted); transition: transform .15s ease; }
+.wp-item-toggle[aria-expanded="true"] .wp-chevron { transform: rotate(180deg); }
+.wp-item-panel { padding: 2px 10px 14px 48px; display: flex; flex-direction: column; gap: 8px; }
+.wp-item-panel img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; display: block; border: 1px solid var(--border); }
+.wp-item-panel[hidden] { display: none; }
+
+.right-col { display: flex; flex-direction: column; gap: 20px; }
+
+.gmap-card { margin-top: 20px; }
+.gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
+.gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="site-nav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo"><img src="https://lh3.googleusercontent.com/d/1VA4L5wp73LKiC0n33gJWcnbvEx8y7KRg" alt="Logo Cedeinco / San Cristóbal" loading="lazy"></span>
+      <span class="brand-text">
+        <span class="brand-title">Rutas San Cristóbal</span>
+        <span class="brand-sub">Cedeinco · San Cristóbal</span>
+      </span>
+    </a>
+    <div class="site-nav-links">
+      <a href="index.html">Rutas</a>
+    </div>
+  </nav>
+
+  <div class="breadcrumb"><a href="index.html">Rutas</a> / Circuito Patrimonial San Cristóbal</div>
+
+  <div class="eyebrow">San Cristóbal · Bogotá D.C.</div>
+  <h1>CIRCUITO PATRIMONIAL SAN CRISTÓBAL "De la memoria institucional a la casa de hoy"</h1>
+  <p class="subtitle">¡Acompáñanos a descubrir la riqueza oculta de nuestras calles en un inolvidable viaje a pie por las laderas orientales de Bogotá! Esta ruta patrimonial te invita a recorrer las edificaciones, casonas, templos y plazas históricas que guardan la memoria viva, la fe popular y el espíritu trabajador de los barrios obreros de San Cristóbal. A lo largo del trayecto, cada rincón nos abrirá una ventana a nuestra identidad mientras disfrutamos del majestuoso paisaje de los cerros orientales. ¡Ven a caminar con nosotros, reconectar con las raíces de nuestro territorio y sentir la historia latente en un turismo patrimonial, cercano y hecho por y para la comunidad!</p>
+
+  <div class="maps-actions">
+    <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=4.578446,-74.086529&travelmode=walking" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-7.58 7-13a7 7 0 10-14 0c0 5.42 7 13 7 13z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+      Cómo llegar
+    </a>
+    <a class="btn btn-secondary" href="https://www.google.com/maps/d/viewer?mid=1p9p84idczmSkZhQwWawQYxnSD_2XuKc" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Ver trazado en Google Maps
+    </a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">1.0 <small>km</small></span></div>
+    <div class="stat"><span class="stat-label">Desnivel</span><span class="stat-value">+11 <small>m</small></span></div>
+    <div class="stat difficulty"><span class="stat-label">Dificultad</span><span class="stat-value">Fácil</span></div>
+    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">20 <small>min</small></span></div>
+    <div class="stat"><span class="stat-label">Tipo</span><span class="stat-value">Circular</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Trazado del sendero</span>
+        <span class="card-hint">5 puntos de referencia</span>
+      </div>
+      <div class="map-figure">
+        <svg class="map-svg" viewBox="0 0 620 624.4" role="img" aria-label="Mapa del circuito Circuito Patrimonial San Cristóbal con sus puntos de referencia">
+  <defs>
+    <pattern id="contours" width="42" height="42" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+      <path class="contour" d="M0,21 Q10.5,5 21,21 T42,21" />
+      <path class="contour" d="M0,42 Q10.5,26 21,42 T42,42" />
+      <path class="contour" d="M0,0 Q10.5,-16 21,0 T42,0" />
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="620" height="624.4" fill="url(#contours)" />
+  <path class="trail-line-halo" d="M 96.3,574.4 L 50.0,515.1 L 86.5,465.2 L 138.4,381.9 L 191.3,300.9 L 208.4,309.9 L 260.4,223.6 L 299.0,166.3 L 335.8,113.9 L 378.3,52.5 L 385.3,50.0 L 394.3,57.5 L 406.5,63.6 L 421.8,75.4 L 447.9,84.0 L 480.8,94.7 L 519.3,93.5 L 559.8,85.7 L 570.0,107.5 L 534.9,112.4 L 501.3,118.8 L 470.6,124.6 L 434.8,133.2 L 416.0,149.2 L 400.9,165.1 L 382.9,184.9 L 366.8,205.2 L 350.9,221.3 L 332.6,278.3 L 325.6,306.2 L 312.4,356.2 L 307.6,373.4 L 356.0,407.7 L 361.6,411.8 L 400.1,364.0 L 406.7,355.9 L 445.2,387.5 L 473.9,411.5 L 498.5,432.1 L 504.6,439.4 L 491.9,452.6 L 472.2,480.0 L 458.8,494.3 L 447.6,508.2 L 436.6,525.8 L 417.4,543.5 L 403.5,540.6 L 380.1,520.5 L 348.5,491.8" />
+  <path class="trail-line" d="M 96.3,574.4 L 50.0,515.1 L 86.5,465.2 L 138.4,381.9 L 191.3,300.9 L 208.4,309.9 L 260.4,223.6 L 299.0,166.3 L 335.8,113.9 L 378.3,52.5 L 385.3,50.0 L 394.3,57.5 L 406.5,63.6 L 421.8,75.4 L 447.9,84.0 L 480.8,94.7 L 519.3,93.5 L 559.8,85.7 L 570.0,107.5 L 534.9,112.4 L 501.3,118.8 L 470.6,124.6 L 434.8,133.2 L 416.0,149.2 L 400.9,165.1 L 382.9,184.9 L 366.8,205.2 L 350.9,221.3 L 332.6,278.3 L 325.6,306.2 L 312.4,356.2 L 307.6,373.4 L 356.0,407.7 L 361.6,411.8 L 400.1,364.0 L 406.7,355.9 L 445.2,387.5 L 473.9,411.5 L 498.5,432.1 L 504.6,439.4 L 491.9,452.6 L 472.2,480.0 L 458.8,494.3 L 447.6,508.2 L 436.6,525.8 L 417.4,543.5 L 403.5,540.6 L 380.1,520.5 L 348.5,491.8" />
+  <path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(138.4,381.9) rotate(-57.5)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(385.3,50.0) rotate(17.5)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(559.8,85.7) rotate(15.4)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(400.9,165.1) rotate(132.9)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(307.6,373.4) rotate(49.8)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(498.5,432.1) rotate(42.3)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(436.6,525.8) rotate(130.6)"/>
+  <g class="wp wp-start" data-wp="1" transform="translate(96.3,574.4)" tabindex="0" role="button" aria-label="1. Punto de Partida · Memoria Institucional">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="-3.5" r="1" fill="currentColor"/><line x1="0" y1="-1" x2="0" y2="4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g><text class="wp-num" y="-15" text-anchor="middle">1</text></g>
+<g class="wp wp-door" data-wp="2" transform="translate(378.3,52.5)" tabindex="0" role="button" aria-label="2. Casona Patrimonial">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><rect x="-3.5" y="-6" width="7" height="12" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="1.6" cy="0" r="0.7" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">2</text></g>
+<g class="wp wp-door" data-wp="3" transform="translate(534.9,112.4)" tabindex="0" role="button" aria-label="3. Templo Histórico">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><rect x="-3.5" y="-6" width="7" height="12" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="1.6" cy="0" r="0.7" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">3</text></g>
+<g class="wp wp-poi" data-wp="4" transform="translate(325.6,306.2)" tabindex="0" role="button" aria-label="4. Plaza Histórica">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="0" r="5.5" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="0.8" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">4</text></g>
+<g class="wp wp-end" data-wp="5" transform="translate(504.6,439.4)" tabindex="0" role="button" aria-label="5. Casa de Hoy">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><path d="M-3 7 L-3 -7 L4 -4.5 L-3 -2" fill="currentColor" stroke="none"/></g><text class="wp-num" y="-15" text-anchor="middle">5</text></g>
+  <g transform="translate(568.0,46)">
+    <line class="compass-line" x1="0" y1="14" x2="0" y2="-14" />
+    <path class="compass-line" d="M0,-14 L-4,-6 M0,-14 L4,-6" fill="none" />
+    <text class="compass" x="0" y="27" text-anchor="middle">N</text>
+  </g>
+  <g transform="translate(241.2,596.4)">
+    <line class="scalebar-line" x1="0" y1="0" x2="137.7" y2="0" />
+    <line class="scalebar-line" x1="0" y1="-4" x2="0" y2="4" />
+    <line class="scalebar-line" x1="137.7" y1="-4" x2="137.7" y2="4" />
+    <text class="scalebar-text" x="68.8" y="-8" text-anchor="middle">100 m</text>
+  </g>
+</svg>
+      </div>
+      <div class="map-caption">
+        <span><span class="legend-dot start"></span> Inicio / fin</span>
+        <span><span class="legend-dot"></span> Puntos de referencia</span>
+        <span>Coordenadas 4.5784–4.5819 N, 74.0834–74.0868 O</span>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Perfil de elevación</span>
+          <span class="card-hint">2598–2619 m</span>
+        </div>
+        <div class="elev-figure">
+          <svg class="elev-svg" viewBox="0 0 900 220" role="img" aria-label="Perfil de elevación del circuito">
+  <defs>
+    <linearGradient id="elevFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02" />
+    </linearGradient>
+  </defs>
+  <line class="elev-grid" x1="0" y1="0" x2="900" y2="0" />
+  <line class="elev-grid" x1="0" y1="110.0" x2="900" y2="110.0" />
+  <line class="elev-grid" x1="0" y1="186" x2="900" y2="186" />
+  <text class="elev-axis-label" x="4" y="12">2619 m</text>
+  <text class="elev-axis-label" x="4" y="180">2598 m</text>
+  <path class="elev-area" d="M 0.0,174.5 L 37.9,197.2 L 69.1,202.0 L 118.5,210.2 L 167.2,218.0 L 177.0,214.4 L 227.7,208.5 L 262.5,205.6 L 294.8,196.6 L 332.4,169.4 L 336.1,164.0 L 342.1,154.5 L 348.9,142.6 L 358.7,125.6 L 372.5,100.5 L 389.9,72.8 L 409.3,40.4 L 430.1,3.3 L 442.2,2.0 L 460.1,32.1 L 477.3,59.9 L 493.0,85.0 L 511.6,114.0 L 524.0,129.3 L 535.0,141.5 L 548.5,156.0 L 561.6,167.2 L 573.0,178.6 L 603.1,186.7 L 617.6,186.8 L 643.6,182.5 L 652.6,180.1 L 682.5,160.6 L 686.1,160.2 L 717.0,158.0 L 722.2,156.6 L 747.3,145.7 L 766.2,137.2 L 782.3,129.5 L 787.1,127.4 L 796.3,131.9 L 813.4,133.9 L 823.2,134.9 L 832.2,132.4 L 842.7,129.5 L 855.8,126.1 L 863.0,128.7 L 878.5,135.1 L 900.0,144.2 L 900,220 L 0,220 Z" />
+  <path class="elev-line" d="M 0.0,174.5 L 37.9,197.2 L 69.1,202.0 L 118.5,210.2 L 167.2,218.0 L 177.0,214.4 L 227.7,208.5 L 262.5,205.6 L 294.8,196.6 L 332.4,169.4 L 336.1,164.0 L 342.1,154.5 L 348.9,142.6 L 358.7,125.6 L 372.5,100.5 L 389.9,72.8 L 409.3,40.4 L 430.1,3.3 L 442.2,2.0 L 460.1,32.1 L 477.3,59.9 L 493.0,85.0 L 511.6,114.0 L 524.0,129.3 L 535.0,141.5 L 548.5,156.0 L 561.6,167.2 L 573.0,178.6 L 603.1,186.7 L 617.6,186.8 L 643.6,182.5 L 652.6,180.1 L 682.5,160.6 L 686.1,160.2 L 717.0,158.0 L 722.2,156.6 L 747.3,145.7 L 766.2,137.2 L 782.3,129.5 L 787.1,127.4 L 796.3,131.9 L 813.4,133.9 L 823.2,134.9 L 832.2,132.4 L 842.7,129.5 L 855.8,126.1 L 863.0,128.7 L 878.5,135.1 L 900.0,144.2" />
+  <circle class="ec-wp" data-wp="1" cx="0.0" cy="174.5" r="4.5"/>
+<circle class="ec-wp" data-wp="2" cx="332.4" cy="169.4" r="4.5"/>
+<circle class="ec-wp" data-wp="3" cx="460.1" cy="32.1" r="4.5"/>
+<circle class="ec-wp" data-wp="4" cx="617.6" cy="186.8" r="4.5"/>
+<circle class="ec-wp" data-wp="5" cx="787.1" cy="127.4" r="4.5"/>
+  <text class="elev-peak-label" x="331" y="10" text-anchor="middle">Templo Histórico · 2619 m</text>
+  <text class="elev-axis-label" x="0" y="202">0 km</text>
+  <text class="elev-axis-label" x="900" y="202" text-anchor="end">1.0 km</text>
+</svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Puntos de referencia</span>
+          <span class="card-hint">en orden del recorrido</span>
+        </div>
+        <ul class="wp-list">
+<li class="wp-item" data-wp="1">
+<button class="wp-item-toggle" data-wp="1" aria-expanded="false" aria-controls="wp-panel-1">
+<span class="wp-item-num cat-start">1</span>
+<span class="wp-item-body"><span class="wp-item-title">Punto de Partida · Memoria Institucional</span><span class="wp-item-meta">Inicio del circuito · 2602 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-1" hidden>
+<img src="Imagenes%20Mapas/CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20De%20la%20memoria%20institucional%20a%20la%20casa%20de%20hoy/Photo%20of%20CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20(1-5).jpg" alt="Punto de Partida · Memoria Institucional" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="2">
+<button class="wp-item-toggle" data-wp="2" aria-expanded="false" aria-controls="wp-panel-2">
+<span class="wp-item-num cat-door">2</span>
+<span class="wp-item-body"><span class="wp-item-title">Casona Patrimonial</span><span class="wp-item-meta">Arquitectura histórica · 2602 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-2" hidden>
+<img src="Imagenes%20Mapas/CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20De%20la%20memoria%20institucional%20a%20la%20casa%20de%20hoy/Photo%20of%20CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20(2-5).jpg" alt="Casona Patrimonial" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="3">
+<button class="wp-item-toggle" data-wp="3" aria-expanded="false" aria-controls="wp-panel-3">
+<span class="wp-item-num cat-door">3</span>
+<span class="wp-item-body"><span class="wp-item-title">Templo Histórico</span><span class="wp-item-meta">Fe popular · 2616 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-3" hidden>
+<img src="Imagenes%20Mapas/CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20De%20la%20memoria%20institucional%20a%20la%20casa%20de%20hoy/Photo%20of%20CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20(3-5).jpg" alt="Templo Histórico" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="4">
+<button class="wp-item-toggle" data-wp="4" aria-expanded="false" aria-controls="wp-panel-4">
+<span class="wp-item-num cat-poi">4</span>
+<span class="wp-item-body"><span class="wp-item-title">Plaza Histórica</span><span class="wp-item-meta">Espacio comunitario · 2601 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-4" hidden>
+<img src="Imagenes%20Mapas/CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20De%20la%20memoria%20institucional%20a%20la%20casa%20de%20hoy/Photo%20of%20CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20(4-5).jpg" alt="Plaza Histórica" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="5">
+<button class="wp-item-toggle" data-wp="5" aria-expanded="false" aria-controls="wp-panel-5">
+<span class="wp-item-num cat-end">5</span>
+<span class="wp-item-body"><span class="wp-item-title">Casa de Hoy</span><span class="wp-item-meta">Cierre del circuito · 2607 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-5" hidden>
+<img src="Imagenes%20Mapas/CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20De%20la%20memoria%20institucional%20a%20la%20casa%20de%20hoy/Photo%20of%20CIRCUITO%20PATRIMONIAL%20SAN%20CRIST%C3%93BAL%20(5-5).jpg" alt="Casa de Hoy" loading="lazy">
+</div>
+</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card gmap-card">
+    <div class="card-head">
+      <span class="card-title">Google Maps</span>
+      <span class="card-hint">mapa interactivo con el trazado real</span>
+    </div>
+    <div class="gmap-embed">
+      <iframe src="https://www.google.com/maps/d/embed?mid=1p9p84idczmSkZhQwWawQYxnSD_2XuKc" loading="lazy" allowfullscreen title="Trazado de Circuito Patrimonial San Cristóbal en Google Maps"></iframe>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Cedeinco / San Cristóbal · mapas de rutas de senderismo.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var markers = Array.prototype.slice.call(document.querySelectorAll('.wp'));
+  var items = Array.prototype.slice.call(document.querySelectorAll('.wp-item'));
+  var ecDots = Array.prototype.slice.call(document.querySelectorAll('.ec-wp'));
+
+  function setActive(id){
+    markers.forEach(function(m){ m.classList.toggle('active', m.dataset.wp === id); });
+    items.forEach(function(it){ it.classList.toggle('active', it.dataset.wp === id); });
+    ecDots.forEach(function(dt){ dt.classList.toggle('active', dt.dataset.wp === id); });
+  }
+  function clearActive(){
+    markers.forEach(function(m){ m.classList.remove('active'); });
+    items.forEach(function(it){ it.classList.remove('active'); });
+    ecDots.forEach(function(dt){ dt.classList.remove('active'); });
+  }
+
+  [].concat(markers, items, ecDots).forEach(function(el){
+    el.addEventListener('mouseenter', function(){ setActive(el.dataset.wp); });
+    el.addEventListener('focus', function(){ setActive(el.dataset.wp); });
+    el.addEventListener('click', function(){ setActive(el.dataset.wp); });
+  });
+  var mapCard = document.querySelector('.map-figure');
+  var listCard = document.querySelector('.wp-list');
+  [mapCard, listCard].forEach(function(c){
+    if(c) c.addEventListener('mouseleave', clearActive);
+  });
+
+  var toggles = Array.prototype.slice.call(document.querySelectorAll('.wp-item-toggle'));
+  toggles.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var panel = document.getElementById('wp-panel-' + btn.dataset.wp);
+      var isOpen = btn.getAttribute('aria-expanded') === 'true';
+      toggles.forEach(function(other){
+        if (other === btn) return;
+        other.setAttribute('aria-expanded', 'false');
+        var op = document.getElementById('wp-panel-' + other.dataset.wp);
+        if (op) op.hidden = true;
+      });
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if (panel) panel.hidden = isOpen;
+      if (!isOpen && panel) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
