@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botánica y Micromundo de los Cerros Orientales de Bogotá · Rutas San Cristóbal</title>
+<meta name="description" content="Ruta de caminata botánica y observación de micromundo en los cerros orientales de Bogotá, San Cristóbal: trazado, perfil de elevación y puntos de referencia.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="style.css">
+<style>
+.breadcrumb {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: -6px 0 16px;
+}
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.subtitle { max-width: 72ch; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.stat { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
+.stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.stat-value { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat-value small { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.stat.difficulty .stat-value { color: #b8842c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stat.difficulty .stat-value { color: #d9a441; } }
+:root[data-theme="dark"] .stat.difficulty .stat-value { color: #d9a441; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+.map-figure { background: linear-gradient(160deg, var(--map-bg-1), var(--map-bg-2)); position: relative; }
+.map-svg { display: block; width: 100%; height: auto; }
+.contour { fill: none; stroke: var(--map-contour); stroke-width: 1; }
+.trail-line-halo { fill: none; stroke: var(--surface); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
+.trail-line { fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.dir-arrow { fill: var(--accent); opacity: 0.85; }
+
+.wp { cursor: pointer; outline: none; }
+.wp-halo { fill: var(--surface); opacity: 0.9; transition: r 0.15s ease, opacity .15s ease; }
+.wp-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; transition: r .15s ease; r: 8.5px; }
+.wp-icon { color: var(--green); pointer-events: none; }
+.wp-num { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; fill: var(--green-deep, var(--green)); opacity: 0; transition: opacity .15s ease; pointer-events: none; }
+.wp:hover .wp-dot, .wp:focus-visible .wp-dot, .wp.active .wp-dot { r: 10.8px; }
+.wp:hover .wp-num, .wp:focus-visible .wp-num, .wp.active .wp-num { opacity: 1; }
+.wp.active .wp-dot { stroke: var(--gold); fill: var(--gold); }
+.wp.active .wp-icon { color: #fff; }
+.wp-start .wp-dot, .wp-end .wp-dot { stroke: var(--green); }
+.wp-start .wp-icon, .wp-end .wp-icon { color: var(--green); }
+.wp-start.active .wp-dot, .wp-end.active .wp-dot { stroke: var(--gold); fill: var(--gold); }
+.wp-start.active .wp-icon, .wp-end.active .wp-icon { color: #fff; }
+
+.compass { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: var(--text); font-weight: 700; }
+.compass-line { stroke: var(--text); stroke-width: 1.4; }
+.scalebar-line { stroke: var(--text); stroke-width: 1.6; }
+.scalebar-text { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text); }
+
+.map-caption { padding: 10px 18px 14px; font-size: 12px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.map-caption span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; border: 2px solid var(--accent); background: var(--surface); }
+.legend-dot.start { background: var(--green); border-color: var(--green); }
+
+.elev-figure { padding: 6px 8px 0; }
+.elev-svg { display: block; width: 100%; height: auto; }
+.elev-area { fill: url(#elevFill); }
+.elev-line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; }
+.elev-grid { stroke: var(--border); stroke-width: 1; }
+.elev-axis-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text-muted); }
+.ec-wp { fill: var(--surface); stroke: var(--accent); stroke-width: 2; cursor: pointer; transition: r .15s ease, fill .15s ease; }
+.ec-wp:hover, .ec-wp.active { fill: var(--gold); stroke: var(--gold); r: 6; }
+.elev-peak-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; fill: var(--green-deep, var(--green)); font-weight: 700; }
+
+.wp-list { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.wp-item { border-radius: 10px; overflow: hidden; }
+.wp-item-toggle {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10px;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  transition: background .12s ease;
+}
+.wp-item-toggle:hover, .wp-item-toggle:focus-visible, .wp-item.active .wp-item-toggle { background: var(--surface-2); outline: none; }
+.wp-item-num { flex: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--green-deep, var(--green)); border: 1.6px solid var(--accent); background: var(--surface); }
+.wp-item-num.cat-start, .wp-item-num.cat-end { border-color: var(--green); }
+.wp-item.active .wp-item-num { background: var(--gold); border-color: var(--gold); color: #fff; }
+.wp-item-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.wp-item-title { font-size: 14.5px; font-weight: 600; }
+.wp-item-meta { font-size: 11.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.wp-chevron { flex: none; color: var(--text-muted); transition: transform .15s ease; }
+.wp-item-toggle[aria-expanded="true"] .wp-chevron { transform: rotate(180deg); }
+.wp-item-panel { padding: 2px 10px 14px 48px; display: flex; flex-direction: column; gap: 8px; }
+.wp-item-panel img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; display: block; border: 1px solid var(--border); }
+.wp-item-panel[hidden] { display: none; }
+
+.right-col { display: flex; flex-direction: column; gap: 20px; }
+
+.gmap-card { margin-top: 20px; }
+.gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
+.gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="site-nav">
+    <a class="brand" href="index.html">
+      <span class="brand-logo"><img src="https://lh3.googleusercontent.com/d/1VA4L5wp73LKiC0n33gJWcnbvEx8y7KRg" alt="Logo Cedeinco / San Cristóbal" loading="lazy"></span>
+      <span class="brand-text">
+        <span class="brand-title">Rutas San Cristóbal</span>
+        <span class="brand-sub">Cedeinco · San Cristóbal</span>
+      </span>
+    </a>
+    <div class="site-nav-links">
+      <a href="index.html">Rutas</a>
+    </div>
+  </nav>
+
+  <div class="breadcrumb"><a href="index.html">Rutas</a> / Botánica y Micromundo de los Cerros Orientales de Bogotá</div>
+
+  <div class="eyebrow">San Cristóbal · Bogotá D.C.</div>
+  <h1>Botánica y Micromundo de los Cerros Orientales de Bogotá</h1>
+  <p class="subtitle">Este recorrido turístico por las montañas surorientales de Bogotá ofrece una experiencia ecoturística e inclusiva que invita a conectar de forma única con la biodiversidad de los cerros orientales y el páramo, empleando herramientas como lupas de joyería y microscopios de campo para revelar los detalles minúsculos del mundo vegetal que suelen pasar desapercibidos a simple vista. A través de este enfoque multisensorial orientado al asombro y el descubrimiento, los asistentes exploran la fragilidad del ecosistema y el valor del mundo diminuto, promoviendo el conocimiento profundo como la herramienta más poderosa para inspirar el amor, la pertenencia y la conservación activa de nuestro patrimonio natural.</p>
+
+  <div class="maps-actions">
+    <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=4.500745,-74.085991&travelmode=walking" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-7.58 7-13a7 7 0 10-14 0c0 5.42 7 13 7 13z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+      Cómo llegar
+    </a>
+    <a class="btn btn-secondary" href="https://www.google.com/maps/d/viewer?mid=1_VjW7dxJPanD_CGPSeMJZeIkM00hpEk" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Ver trazado en Google Maps
+    </a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">2.0 <small>km</small></span></div>
+    <div class="stat"><span class="stat-label">Desnivel</span><span class="stat-value">+293 <small>m</small></span></div>
+    <div class="stat difficulty"><span class="stat-label">Dificultad</span><span class="stat-value">Moderada</span></div>
+    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">60 <small>min</small></span></div>
+    <div class="stat"><span class="stat-label">Tipo</span><span class="stat-value">Ida</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Trazado del sendero</span>
+        <span class="card-hint">6 puntos de referencia</span>
+      </div>
+      <div class="map-figure">
+        <svg class="map-svg" viewBox="0 0 620 314.5" role="img" aria-label="Mapa del sendero Botánica y Micromundo de los Cerros Orientales de Bogotá con sus puntos de referencia">
+  <defs>
+    <pattern id="contours" width="42" height="42" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+      <path class="contour" d="M0,21 Q10.5,5 21,21 T42,21" />
+      <path class="contour" d="M0,42 Q10.5,26 21,42 T42,42" />
+      <path class="contour" d="M0,0 Q10.5,-16 21,0 T42,0" />
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="620" height="314.5" fill="url(#contours)" />
+  <path class="trail-line-halo" d="M 55.1,50.6 L 55.3,51.0 L 55.0,50.9 L 55.3,50.0 L 53.6,51.0 L 52.5,53.4 L 52.4,54.8 L 52.4,55.4 L 51.7,58.3 L 50.6,60.5 L 50.5,61.1 L 50.8,63.6 L 50.0,65.1 L 50.1,66.3 L 50.3,66.8 L 51.3,69.6 L 51.8,72.4 L 51.8,72.9 L 52.3,73.8 L 55.5,76.5 L 56.0,76.8 L 57.5,78.1 L 58.8,79.9 L 59.8,80.4 L 60.3,80.8 L 61.8,82.0 L 63.6,85.3 L 63.9,85.8 L 64.9,87.9 L 67.4,90.9 L 67.7,91.4 L 69.3,95.0 L 70.2,98.1 L 70.3,98.6 L 70.8,99.7 L 73.0,102.5 L 73.8,104.4 L 73.9,104.9 L 74.6,106.2 L 76.3,107.7 L 77.3,109.3 L 77.5,109.9 L 79.7,111.8 L 80.9,113.7 L 81.3,114.1 L 85.9,116.8 L 86.5,117.0 L 90.2,119.4 L 93.1,120.4 L 93.5,120.6 L 99.6,124.4 L 99.9,124.5 L 102.4,126.0 L 106.1,126.3 L 106.5,126.5 L 112.8,129.1 L 113.2,129.3 L 119.2,132.4 L 119.5,132.6 L 123.9,134.3 L 126.5,136.1 L 126.7,136.6 L 127.7,137.2 L 130.1,137.4 L 131.5,138.1 L 132.9,138.0 L 133.4,138.0 L 138.1,139.6 L 138.9,138.9 L 140.1,138.7 L 140.4,138.7 L 142.6,139.5 L 143.6,139.3 L 144.2,138.8 L 146.8,138.6 L 147.2,138.7 L 148.3,138.3 L 149.8,136.0 L 152.0,134.0 L 152.4,133.8 L 154.2,132.9 L 155.2,131.6 L 156.7,130.6 L 156.6,129.4 L 156.6,129.6 L 157.7,129.4 L 160.9,130.0 L 163.2,130.8 L 163.8,131.0 L 165.6,131.8 L 169.6,132.3 L 170.2,132.4 L 176.6,132.8 L 177.1,132.9 L 179.6,133.5 L 182.7,133.7 L 183.0,133.2 L 185.0,132.9 L 185.6,132.5 L 191.8,131.1 L 192.2,130.9 L 197.5,129.6 L 198.0,129.3 L 200.2,128.3 L 203.0,127.9 L 205.2,126.8 L 205.6,126.7 L 207.0,126.3 L 210.4,124.3 L 211.3,122.9 L 210.7,122.6 L 216.3,119.8 L 216.9,119.4 L 222.2,116.5 L 222.8,116.1 L 227.6,114.1 L 228.1,113.8 L 230.6,112.0 L 233.6,109.2 L 234.0,108.8 L 235.0,108.7 L 236.9,107.4 L 237.1,105.9 L 238.7,104.3 L 239.1,104.1 L 242.0,102.6 L 244.7,100.0 L 245.0,99.7 L 249.1,95.4 L 250.3,95.0 L 250.8,94.8 L 253.0,91.9 L 255.4,90.8 L 255.8,90.6 L 260.4,87.0 L 260.8,86.9 L 263.5,85.7 L 267.4,85.5 L 267.7,85.4 L 270.3,84.5 L 272.3,82.8 L 273.0,82.6 L 273.3,83.2 L 273.8,83.1 L 276.4,83.0 L 277.6,81.5 L 278.9,80.8 L 279.3,80.7 L 281.0,79.8 L 284.5,79.2 L 285.0,79.1 L 288.8,77.8 L 291.7,77.8 L 292.1,77.9 L 293.7,79.3 L 294.4,78.9 L 294.3,78.1 L 294.9,77.1 L 294.3,74.9 L 294.2,74.4 L 292.6,72.4 L 292.3,71.4 L 292.6,70.4 L 292.6,68.6 L 293.6,69.2 L 293.7,69.2 L 296.7,67.6 L 299.4,67.7 L 299.9,67.7 L 301.6,69.4 L 302.5,69.6 L 304.6,69.2 L 306.4,70.4 L 306.8,70.7 L 307.8,72.8 L 309.1,74.1 L 309.6,75.5 L 310.8,76.0 L 311.1,76.0 L 313.0,76.6 L 315.0,78.3 L 314.7,79.5 L 316.0,81.0 L 316.8,81.5 L 316.3,82.3 L 316.6,83.2 L 316.2,84.9 L 317.4,86.9 L 317.4,88.4 L 317.3,88.9 L 318.2,90.5 L 320.8,93.6 L 321.3,94.0 L 324.3,97.2 L 325.2,97.7 L 327.3,97.6 L 327.6,97.9 L 329.4,100.6 L 328.9,103.5 L 328.1,104.9 L 328.3,105.4 L 327.9,106.0 L 329.6,108.2 L 330.8,111.1 L 331.0,111.5 L 331.8,112.7 L 335.6,114.9 L 336.0,115.2 L 338.1,115.9 L 338.8,115.5 L 339.8,113.7 L 340.3,111.6 L 340.2,111.2 L 340.0,110.1 L 338.6,109.0 L 338.4,105.8 L 338.8,105.2 L 338.6,104.5 L 338.1,103.7 L 337.4,98.6 L 337.2,98.1 L 336.7,95.8 L 334.7,92.4 L 334.3,91.9 L 333.2,90.6 L 332.7,88.5 L 333.5,86.6 L 333.9,86.1 L 335.8,84.4 L 337.1,84.1 L 338.4,89.4 L 338.6,90.1 L 338.6,91.1 L 340.0,90.9 L 340.9,92.7 L 342.6,93.5 L 343.0,93.8 L 346.1,95.1 L 348.3,96.9 L 348.8,97.2 L 351.6,99.4 L 351.9,100.2 L 352.1,103.4 L 351.9,103.9 L 350.7,105.0 L 349.4,104.3 L 349.9,105.1 L 349.3,105.9 L 349.3,106.9 L 350.1,108.3 L 350.5,108.5 L 353.1,112.5 L 354.3,113.0 L 354.7,113.1 L 357.0,113.3 L 357.8,113.0 L 358.7,111.5 L 358.1,109.0 L 358.0,108.5 L 357.7,107.0 L 355.8,103.6 L 356.7,102.4 L 356.8,101.0 L 356.6,99.9 L 355.8,97.0 L 356.7,94.3 L 356.8,93.6 L 356.8,91.7 L 357.6,89.2 L 357.4,88.0 L 357.5,87.5 L 357.1,85.0 L 357.5,84.1 L 359.5,82.0 L 360.6,82.3 L 360.9,82.6 L 363.3,83.7 L 363.6,84.5 L 363.3,86.1 L 362.6,87.0 L 363.5,87.7 L 364.0,88.2 L 365.0,92.7 L 365.6,93.8 L 365.9,94.4 L 366.0,95.8 L 365.4,98.5 L 365.6,100.4 L 365.8,101.0 L 366.5,103.1 L 368.4,105.8 L 369.0,106.2 L 373.8,106.3 L 374.3,106.0 L 374.8,105.7 L 376.1,104.3 L 375.9,101.9 L 374.9,99.0 L 374.7,98.1 L 375.2,94.1 L 374.7,92.5 L 374.9,91.1 L 375.3,90.9 L 375.9,90.7 L 377.6,91.3 L 379.6,93.5 L 380.7,94.1 L 381.4,94.3 L 383.8,95.7 L 387.7,95.8 L 387.9,95.8 L 388.6,94.4 L 386.5,93.7 L 387.5,89.9 L 387.6,88.9 L 388.2,88.2 L 388.1,86.5 L 386.8,82.1 L 386.6,81.6 L 385.8,75.9 L 385.5,75.3 L 384.8,74.5 L 384.1,71.7 L 382.5,70.3 L 382.2,70.0 L 381.1,69.1 L 382.0,66.2 L 381.2,64.5 L 382.3,63.7 L 382.9,63.5 L 385.4,62.7 L 387.4,62.6 L 388.7,63.1 L 389.1,63.4 L 390.9,65.8 L 391.9,66.3 L 393.8,68.2 L 394.2,68.4 L 395.1,69.5 L 396.9,69.3 L 397.9,69.9 L 399.5,69.5 L 400.3,68.0 L 401.8,67.9 L 402.3,67.8 L 408.1,68.7 L 408.5,70.2 L 408.5,70.8 L 408.6,71.4 L 411.6,74.2 L 411.7,75.5 L 411.6,76.1 L 411.0,78.3 L 411.2,79.3 L 412.7,80.3 L 414.1,82.7 L 414.6,83.4 L 416.6,86.0 L 417.7,88.4 L 417.9,89.0 L 418.6,92.7 L 419.0,93.5 L 420.5,94.2 L 421.1,94.4 L 423.3,98.3 L 426.7,99.0 L 427.1,99.1 L 428.4,99.8 L 428.0,99.1 L 429.2,99.1 L 431.2,101.9 L 431.5,102.1 L 433.4,103.5 L 434.4,105.8 L 434.2,107.7 L 434.6,108.1 L 434.8,108.1 L 434.8,109.0 L 435.9,110.4 L 437.4,111.4 L 438.3,113.1 L 438.3,113.5 L 435.1,111.9 L 435.7,112.4 L 435.9,113.5 L 436.8,113.9 L 436.6,116.8 L 437.7,116.7 L 437.9,117.1 L 438.5,118.2 L 440.4,119.9 L 441.9,122.1 L 442.1,122.3 L 443.8,124.8 L 444.7,125.4 L 445.0,126.3 L 445.6,126.5 L 446.7,126.2 L 447.3,125.9 L 447.8,125.8 L 448.7,126.3 L 449.0,128.4 L 450.2,130.2 L 450.1,131.1 L 450.7,132.3 L 450.9,132.5 L 451.9,132.1 L 452.8,134.7 L 452.4,135.6 L 452.9,136.9 L 453.8,137.1 L 453.8,137.1 L 453.9,137.9 L 453.2,138.7 L 454.4,140.5 L 454.5,141.8 L 455.6,142.6 L 456.1,142.9 L 457.1,143.8 L 457.2,146.0 L 458.0,148.9 L 458.2,149.2 L 460.1,151.7 L 460.1,153.6 L 461.2,155.1 L 461.6,156.8 L 461.8,157.5 L 463.0,160.1 L 462.9,161.2 L 462.0,161.6 L 462.6,162.6 L 462.7,163.9 L 462.4,164.9 L 461.3,165.4 L 461.9,169.2 L 461.3,171.1 L 461.4,171.6 L 465.1,176.6 L 465.6,176.6 L 466.1,176.4 L 469.5,176.0 L 468.8,177.1 L 469.1,178.1 L 468.9,178.3 L 469.0,178.2 L 467.5,179.0 L 467.4,180.2 L 466.9,180.6 L 467.6,181.8 L 467.5,182.8 L 466.9,183.7 L 466.9,184.0 L 467.1,184.9 L 466.8,185.8 L 467.3,188.2 L 469.0,190.7 L 469.5,191.5 L 470.2,194.9 L 469.0,198.8 L 468.6,199.3 L 466.7,201.0 L 466.8,201.9 L 467.8,203.0 L 469.0,202.7 L 469.1,202.4 L 468.8,203.3 L 469.4,203.7 L 472.3,203.9 L 473.3,203.5 L 473.5,203.7 L 475.4,204.2 L 476.6,205.7 L 479.6,207.3 L 480.2,208.3 L 480.5,208.6 L 481.6,210.1 L 483.0,211.0 L 484.9,210.6 L 485.7,209.6 L 485.9,209.1 L 488.1,206.7 L 489.8,206.0 L 492.1,206.1 L 492.5,206.3 L 493.6,206.5 L 494.5,206.1 L 498.2,207.1 L 499.2,208.1 L 499.6,208.7 L 500.0,209.2 L 501.0,209.1 L 501.4,208.7 L 504.5,208.2 L 506.1,207.1 L 506.7,207.2 L 507.4,207.0 L 510.2,206.4 L 513.5,207.8 L 514.0,207.5 L 516.2,206.8 L 518.6,208.0 L 520.9,208.6 L 521.5,208.7 L 526.1,209.8 L 527.6,211.1 L 527.6,211.0 L 528.6,211.7 L 529.2,213.4 L 530.6,212.6 L 531.8,211.3 L 532.6,210.4 L 533.4,208.7 L 534.1,210.3 L 533.4,211.8 L 533.9,210.7 L 533.7,210.7 L 533.5,211.8 L 532.6,214.7 L 531.1,215.8 L 530.9,216.3 L 530.7,216.8 L 529.5,218.7 L 530.2,221.8 L 530.1,223.0 L 530.3,222.9 L 530.8,223.5 L 530.5,226.1 L 531.3,227.9 L 532.4,228.8 L 532.7,228.9 L 535.7,228.1 L 538.0,229.2 L 538.2,230.7 L 538.1,231.0 L 538.9,232.9 L 538.9,234.6 L 539.8,235.1 L 541.0,233.5 L 541.1,233.6 L 541.8,234.4 L 542.7,233.9 L 543.5,232.4 L 545.6,234.3 L 546.0,234.1 L 548.4,233.1 L 550.0,233.7 L 551.0,232.9 L 552.1,233.2 L 552.1,233.5 L 556.6,239.5 L 556.9,239.7 L 559.9,240.6 L 560.4,242.4 L 561.5,244.0 L 561.6,244.3 L 562.7,247.2 L 561.3,250.9 L 561.2,251.1 L 561.0,252.1 L 561.2,253.9 L 563.0,257.4 L 563.2,257.4 L 565.2,259.4 L 566.1,259.7 L 566.6,260.6 L 568.9,261.1 L 569.1,261.3 L 570.0,262.2 L 569.5,264.0 L 569.2,264.5" />
+  <path class="trail-line" d="M 55.1,50.6 L 55.3,51.0 L 55.0,50.9 L 55.3,50.0 L 53.6,51.0 L 52.5,53.4 L 52.4,54.8 L 52.4,55.4 L 51.7,58.3 L 50.6,60.5 L 50.5,61.1 L 50.8,63.6 L 50.0,65.1 L 50.1,66.3 L 50.3,66.8 L 51.3,69.6 L 51.8,72.4 L 51.8,72.9 L 52.3,73.8 L 55.5,76.5 L 56.0,76.8 L 57.5,78.1 L 58.8,79.9 L 59.8,80.4 L 60.3,80.8 L 61.8,82.0 L 63.6,85.3 L 63.9,85.8 L 64.9,87.9 L 67.4,90.9 L 67.7,91.4 L 69.3,95.0 L 70.2,98.1 L 70.3,98.6 L 70.8,99.7 L 73.0,102.5 L 73.8,104.4 L 73.9,104.9 L 74.6,106.2 L 76.3,107.7 L 77.3,109.3 L 77.5,109.9 L 79.7,111.8 L 80.9,113.7 L 81.3,114.1 L 85.9,116.8 L 86.5,117.0 L 90.2,119.4 L 93.1,120.4 L 93.5,120.6 L 99.6,124.4 L 99.9,124.5 L 102.4,126.0 L 106.1,126.3 L 106.5,126.5 L 112.8,129.1 L 113.2,129.3 L 119.2,132.4 L 119.5,132.6 L 123.9,134.3 L 126.5,136.1 L 126.7,136.6 L 127.7,137.2 L 130.1,137.4 L 131.5,138.1 L 132.9,138.0 L 133.4,138.0 L 138.1,139.6 L 138.9,138.9 L 140.1,138.7 L 140.4,138.7 L 142.6,139.5 L 143.6,139.3 L 144.2,138.8 L 146.8,138.6 L 147.2,138.7 L 148.3,138.3 L 149.8,136.0 L 152.0,134.0 L 152.4,133.8 L 154.2,132.9 L 155.2,131.6 L 156.7,130.6 L 156.6,129.4 L 156.6,129.6 L 157.7,129.4 L 160.9,130.0 L 163.2,130.8 L 163.8,131.0 L 165.6,131.8 L 169.6,132.3 L 170.2,132.4 L 176.6,132.8 L 177.1,132.9 L 179.6,133.5 L 182.7,133.7 L 183.0,133.2 L 185.0,132.9 L 185.6,132.5 L 191.8,131.1 L 192.2,130.9 L 197.5,129.6 L 198.0,129.3 L 200.2,128.3 L 203.0,127.9 L 205.2,126.8 L 205.6,126.7 L 207.0,126.3 L 210.4,124.3 L 211.3,122.9 L 210.7,122.6 L 216.3,119.8 L 216.9,119.4 L 222.2,116.5 L 222.8,116.1 L 227.6,114.1 L 228.1,113.8 L 230.6,112.0 L 233.6,109.2 L 234.0,108.8 L 235.0,108.7 L 236.9,107.4 L 237.1,105.9 L 238.7,104.3 L 239.1,104.1 L 242.0,102.6 L 244.7,100.0 L 245.0,99.7 L 249.1,95.4 L 250.3,95.0 L 250.8,94.8 L 253.0,91.9 L 255.4,90.8 L 255.8,90.6 L 260.4,87.0 L 260.8,86.9 L 263.5,85.7 L 267.4,85.5 L 267.7,85.4 L 270.3,84.5 L 272.3,82.8 L 273.0,82.6 L 273.3,83.2 L 273.8,83.1 L 276.4,83.0 L 277.6,81.5 L 278.9,80.8 L 279.3,80.7 L 281.0,79.8 L 284.5,79.2 L 285.0,79.1 L 288.8,77.8 L 291.7,77.8 L 292.1,77.9 L 293.7,79.3 L 294.4,78.9 L 294.3,78.1 L 294.9,77.1 L 294.3,74.9 L 294.2,74.4 L 292.6,72.4 L 292.3,71.4 L 292.6,70.4 L 292.6,68.6 L 293.6,69.2 L 293.7,69.2 L 296.7,67.6 L 299.4,67.7 L 299.9,67.7 L 301.6,69.4 L 302.5,69.6 L 304.6,69.2 L 306.4,70.4 L 306.8,70.7 L 307.8,72.8 L 309.1,74.1 L 309.6,75.5 L 310.8,76.0 L 311.1,76.0 L 313.0,76.6 L 315.0,78.3 L 314.7,79.5 L 316.0,81.0 L 316.8,81.5 L 316.3,82.3 L 316.6,83.2 L 316.2,84.9 L 317.4,86.9 L 317.4,88.4 L 317.3,88.9 L 318.2,90.5 L 320.8,93.6 L 321.3,94.0 L 324.3,97.2 L 325.2,97.7 L 327.3,97.6 L 327.6,97.9 L 329.4,100.6 L 328.9,103.5 L 328.1,104.9 L 328.3,105.4 L 327.9,106.0 L 329.6,108.2 L 330.8,111.1 L 331.0,111.5 L 331.8,112.7 L 335.6,114.9 L 336.0,115.2 L 338.1,115.9 L 338.8,115.5 L 339.8,113.7 L 340.3,111.6 L 340.2,111.2 L 340.0,110.1 L 338.6,109.0 L 338.4,105.8 L 338.8,105.2 L 338.6,104.5 L 338.1,103.7 L 337.4,98.6 L 337.2,98.1 L 336.7,95.8 L 334.7,92.4 L 334.3,91.9 L 333.2,90.6 L 332.7,88.5 L 333.5,86.6 L 333.9,86.1 L 335.8,84.4 L 337.1,84.1 L 338.4,89.4 L 338.6,90.1 L 338.6,91.1 L 340.0,90.9 L 340.9,92.7 L 342.6,93.5 L 343.0,93.8 L 346.1,95.1 L 348.3,96.9 L 348.8,97.2 L 351.6,99.4 L 351.9,100.2 L 352.1,103.4 L 351.9,103.9 L 350.7,105.0 L 349.4,104.3 L 349.9,105.1 L 349.3,105.9 L 349.3,106.9 L 350.1,108.3 L 350.5,108.5 L 353.1,112.5 L 354.3,113.0 L 354.7,113.1 L 357.0,113.3 L 357.8,113.0 L 358.7,111.5 L 358.1,109.0 L 358.0,108.5 L 357.7,107.0 L 355.8,103.6 L 356.7,102.4 L 356.8,101.0 L 356.6,99.9 L 355.8,97.0 L 356.7,94.3 L 356.8,93.6 L 356.8,91.7 L 357.6,89.2 L 357.4,88.0 L 357.5,87.5 L 357.1,85.0 L 357.5,84.1 L 359.5,82.0 L 360.6,82.3 L 360.9,82.6 L 363.3,83.7 L 363.6,84.5 L 363.3,86.1 L 362.6,87.0 L 363.5,87.7 L 364.0,88.2 L 365.0,92.7 L 365.6,93.8 L 365.9,94.4 L 366.0,95.8 L 365.4,98.5 L 365.6,100.4 L 365.8,101.0 L 366.5,103.1 L 368.4,105.8 L 369.0,106.2 L 373.8,106.3 L 374.3,106.0 L 374.8,105.7 L 376.1,104.3 L 375.9,101.9 L 374.9,99.0 L 374.7,98.1 L 375.2,94.1 L 374.7,92.5 L 374.9,91.1 L 375.3,90.9 L 375.9,90.7 L 377.6,91.3 L 379.6,93.5 L 380.7,94.1 L 381.4,94.3 L 383.8,95.7 L 387.7,95.8 L 387.9,95.8 L 388.6,94.4 L 386.5,93.7 L 387.5,89.9 L 387.6,88.9 L 388.2,88.2 L 388.1,86.5 L 386.8,82.1 L 386.6,81.6 L 385.8,75.9 L 385.5,75.3 L 384.8,74.5 L 384.1,71.7 L 382.5,70.3 L 382.2,70.0 L 381.1,69.1 L 382.0,66.2 L 381.2,64.5 L 382.3,63.7 L 382.9,63.5 L 385.4,62.7 L 387.4,62.6 L 388.7,63.1 L 389.1,63.4 L 390.9,65.8 L 391.9,66.3 L 393.8,68.2 L 394.2,68.4 L 395.1,69.5 L 396.9,69.3 L 397.9,69.9 L 399.5,69.5 L 400.3,68.0 L 401.8,67.9 L 402.3,67.8 L 408.1,68.7 L 408.5,70.2 L 408.5,70.8 L 408.6,71.4 L 411.6,74.2 L 411.7,75.5 L 411.6,76.1 L 411.0,78.3 L 411.2,79.3 L 412.7,80.3 L 414.1,82.7 L 414.6,83.4 L 416.6,86.0 L 417.7,88.4 L 417.9,89.0 L 418.6,92.7 L 419.0,93.5 L 420.5,94.2 L 421.1,94.4 L 423.3,98.3 L 426.7,99.0 L 427.1,99.1 L 428.4,99.8 L 428.0,99.1 L 429.2,99.1 L 431.2,101.9 L 431.5,102.1 L 433.4,103.5 L 434.4,105.8 L 434.2,107.7 L 434.6,108.1 L 434.8,108.1 L 434.8,109.0 L 435.9,110.4 L 437.4,111.4 L 438.3,113.1 L 438.3,113.5 L 435.1,111.9 L 435.7,112.4 L 435.9,113.5 L 436.8,113.9 L 436.6,116.8 L 437.7,116.7 L 437.9,117.1 L 438.5,118.2 L 440.4,119.9 L 441.9,122.1 L 442.1,122.3 L 443.8,124.8 L 444.7,125.4 L 445.0,126.3 L 445.6,126.5 L 446.7,126.2 L 447.3,125.9 L 447.8,125.8 L 448.7,126.3 L 449.0,128.4 L 450.2,130.2 L 450.1,131.1 L 450.7,132.3 L 450.9,132.5 L 451.9,132.1 L 452.8,134.7 L 452.4,135.6 L 452.9,136.9 L 453.8,137.1 L 453.8,137.1 L 453.9,137.9 L 453.2,138.7 L 454.4,140.5 L 454.5,141.8 L 455.6,142.6 L 456.1,142.9 L 457.1,143.8 L 457.2,146.0 L 458.0,148.9 L 458.2,149.2 L 460.1,151.7 L 460.1,153.6 L 461.2,155.1 L 461.6,156.8 L 461.8,157.5 L 463.0,160.1 L 462.9,161.2 L 462.0,161.6 L 462.6,162.6 L 462.7,163.9 L 462.4,164.9 L 461.3,165.4 L 461.9,169.2 L 461.3,171.1 L 461.4,171.6 L 465.1,176.6 L 465.6,176.6 L 466.1,176.4 L 469.5,176.0 L 468.8,177.1 L 469.1,178.1 L 468.9,178.3 L 469.0,178.2 L 467.5,179.0 L 467.4,180.2 L 466.9,180.6 L 467.6,181.8 L 467.5,182.8 L 466.9,183.7 L 466.9,184.0 L 467.1,184.9 L 466.8,185.8 L 467.3,188.2 L 469.0,190.7 L 469.5,191.5 L 470.2,194.9 L 469.0,198.8 L 468.6,199.3 L 466.7,201.0 L 466.8,201.9 L 467.8,203.0 L 469.0,202.7 L 469.1,202.4 L 468.8,203.3 L 469.4,203.7 L 472.3,203.9 L 473.3,203.5 L 473.5,203.7 L 475.4,204.2 L 476.6,205.7 L 479.6,207.3 L 480.2,208.3 L 480.5,208.6 L 481.6,210.1 L 483.0,211.0 L 484.9,210.6 L 485.7,209.6 L 485.9,209.1 L 488.1,206.7 L 489.8,206.0 L 492.1,206.1 L 492.5,206.3 L 493.6,206.5 L 494.5,206.1 L 498.2,207.1 L 499.2,208.1 L 499.6,208.7 L 500.0,209.2 L 501.0,209.1 L 501.4,208.7 L 504.5,208.2 L 506.1,207.1 L 506.7,207.2 L 507.4,207.0 L 510.2,206.4 L 513.5,207.8 L 514.0,207.5 L 516.2,206.8 L 518.6,208.0 L 520.9,208.6 L 521.5,208.7 L 526.1,209.8 L 527.6,211.1 L 527.6,211.0 L 528.6,211.7 L 529.2,213.4 L 530.6,212.6 L 531.8,211.3 L 532.6,210.4 L 533.4,208.7 L 534.1,210.3 L 533.4,211.8 L 533.9,210.7 L 533.7,210.7 L 533.5,211.8 L 532.6,214.7 L 531.1,215.8 L 530.9,216.3 L 530.7,216.8 L 529.5,218.7 L 530.2,221.8 L 530.1,223.0 L 530.3,222.9 L 530.8,223.5 L 530.5,226.1 L 531.3,227.9 L 532.4,228.8 L 532.7,228.9 L 535.7,228.1 L 538.0,229.2 L 538.2,230.7 L 538.1,231.0 L 538.9,232.9 L 538.9,234.6 L 539.8,235.1 L 541.0,233.5 L 541.1,233.6 L 541.8,234.4 L 542.7,233.9 L 543.5,232.4 L 545.6,234.3 L 546.0,234.1 L 548.4,233.1 L 550.0,233.7 L 551.0,232.9 L 552.1,233.2 L 552.1,233.5 L 556.6,239.5 L 556.9,239.7 L 559.9,240.6 L 560.4,242.4 L 561.5,244.0 L 561.6,244.3 L 562.7,247.2 L 561.3,250.9 L 561.2,251.1 L 561.0,252.1 L 561.2,253.9 L 563.0,257.4 L 563.2,257.4 L 565.2,259.4 L 566.1,259.7 L 566.6,260.6 L 568.9,261.1 L 569.1,261.3 L 570.0,262.2 L 569.5,264.0 L 569.2,264.5" />
+  <path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(119.2,132.4) rotate(28.4)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(273.3,83.2) rotate(28.9)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(335.8,84.4) rotate(-31.5)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(387.5,89.9) rotate(-77.0)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(447.8,125.8) rotate(16.6)"/>
+<path class="dir-arrow" d="M-5,-3.5 L5,0 L-5,3.5 Z" transform="translate(493.6,206.5) rotate(-4.6)"/>
+  <g class="wp wp-start" data-wp="1" transform="translate(52.5,53.4)" tabindex="0" role="button" aria-label="1. Barrio Tihuaque · llegada en transporte público">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="-3.5" r="1" fill="currentColor"/><line x1="0" y1="-1" x2="0" y2="4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g><text class="wp-num" y="-15" text-anchor="middle">1</text></g>
+<g class="wp wp-poi" data-wp="2" transform="translate(90.2,119.4)" tabindex="0" role="button" aria-label="2. Desvío al Barrio Las Violetas">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="0" r="5.5" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="0.8" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">2</text></g>
+<g class="wp wp-nature" data-wp="3" transform="translate(294.4,78.9)" tabindex="0" role="button" aria-label="3. Parque Las Violetas · inicio de caminata botánica">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><path d="M0 6 L0 2 M0 2 L-4 2 L0 -6 L4 2 Z M-1 -1 L-3 -1 L0 -6 L3 -1 L1 -1" fill="currentColor" stroke="none"/></g><text class="wp-num" y="-15" text-anchor="middle">3</text></g>
+<g class="wp wp-nature" data-wp="4" transform="translate(294.9,77.1)" tabindex="0" role="button" aria-label="4. Inicio de guianza e interpretación ambiental">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><path d="M0 6 L0 2 M0 2 L-4 2 L0 -6 L4 2 Z M-1 -1 L-3 -1 L0 -6 L3 -1 L1 -1" fill="currentColor" stroke="none"/></g><text class="wp-num" y="-15" text-anchor="middle">4</text></g>
+<g class="wp wp-door" data-wp="5" transform="translate(423.3,98.3)" tabindex="0" role="button" aria-label="5. Portón del tanque de agua · inicio camino no pavimentado">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><rect x="-3.5" y="-6" width="7" height="12" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="1.6" cy="0" r="0.7" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">5</text></g>
+<g class="wp wp-end" data-wp="6" transform="translate(530.7,216.8)" tabindex="0" role="button" aria-label="6. Quebrada La Yomasa · cascada, fin del recorrido">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><path d="M-3 7 L-3 -7 L4 -4.5 L-3 -2" fill="currentColor" stroke="none"/></g><text class="wp-num" y="-15" text-anchor="middle">6</text></g>
+  <g transform="translate(568.0,46)">
+    <line class="compass-line" x1="0" y1="14" x2="0" y2="-14" />
+    <path class="compass-line" d="M0,-14 L-4,-6 M0,-14 L4,-6" fill="none" />
+    <text class="compass" x="0" y="27" text-anchor="middle">N</text>
+  </g>
+  <g transform="translate(292.1,286.5)">
+    <line class="scalebar-line" x1="0" y1="0" x2="35.7" y2="0" />
+    <line class="scalebar-line" x1="0" y1="-4" x2="0" y2="4" />
+    <line class="scalebar-line" x1="35.7" y1="-4" x2="35.7" y2="4" />
+    <text class="scalebar-text" x="17.9" y="-8" text-anchor="middle">100 m</text>
+  </g>
+</svg>
+      </div>
+      <div class="map-caption">
+        <span><span class="legend-dot start"></span> Inicio / fin</span>
+        <span><span class="legend-dot"></span> Puntos de referencia</span>
+        <span>Coordenadas 4.4954–4.5008 N, 74.0729–74.0861 O</span>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Perfil de elevación</span>
+          <span class="card-hint">3051–3328 m</span>
+        </div>
+        <div class="elev-figure">
+          <svg class="elev-svg" viewBox="0 0 900 220" role="img" aria-label="Perfil de elevación del sendero">
+  <defs>
+    <linearGradient id="elevFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02" />
+    </linearGradient>
+  </defs>
+  <line class="elev-grid" x1="0" y1="0" x2="900" y2="0" />
+  <line class="elev-grid" x1="0" y1="110.0" x2="900" y2="110.0" />
+  <line class="elev-grid" x1="0" y1="186" x2="900" y2="186" />
+  <text class="elev-axis-label" x="4" y="12">3328 m</text>
+  <text class="elev-axis-label" x="4" y="180">3051 m</text>
+  <path class="elev-area" d="M 0.0,208.0 L 0.4,207.9 L 0.6,208.0 L 1.5,207.7 L 3.1,208.7 L 5.5,209.7 L 6.8,210.2 L 7.3,210.4 L 10.0,211.4 L 12.1,212.4 L 12.7,212.5 L 14.9,213.0 L 16.4,213.8 L 17.4,214.0 L 17.9,214.1 L 20.5,214.3 L 23.0,214.9 L 23.4,214.9 L 24.4,215.0 L 28.1,214.4 L 28.6,214.3 L 30.3,214.0 L 32.3,213.9 L 33.3,213.6 L 33.8,213.4 L 35.5,212.9 L 38.8,212.8 L 39.3,212.8 L 41.4,212.9 L 44.8,212.6 L 45.3,212.6 L 48.8,213.1 L 51.7,213.9 L 52.1,214.0 L 53.2,214.1 L 56.3,214.5 L 58.2,215.0 L 58.6,215.2 L 59.9,215.5 L 61.9,215.6 L 63.6,216.2 L 64.1,216.4 L 66.6,216.8 L 68.7,217.5 L 69.2,217.6 L 73.9,218.0 L 74.4,217.9 L 78.3,218.0 L 81.0,217.4 L 81.4,217.1 L 87.7,214.4 L 88.0,214.3 L 90.5,213.2 L 93.8,211.2 L 94.2,211.0 L 100.3,208.1 L 100.6,207.9 L 106.5,205.5 L 106.9,205.4 L 111.0,203.4 L 113.8,202.9 L 114.3,203.0 L 115.3,202.9 L 117.5,202.2 L 118.8,202.1 L 120.1,201.7 L 120.5,201.5 L 124.9,200.6 L 125.8,200.1 L 126.9,199.7 L 127.2,199.6 L 129.2,199.2 L 130.2,198.8 L 130.8,198.5 L 133.1,197.6 L 133.5,197.6 L 134.6,197.1 L 136.9,195.9 L 139.6,194.7 L 140.0,194.5 L 141.8,193.7 L 143.2,193.0 L 144.8,192.2 L 145.9,191.9 L 146.0,192.0 L 147.0,191.6 L 149.8,191.5 L 151.9,191.6 L 152.5,191.6 L 154.3,191.7 L 157.8,191.5 L 158.3,191.5 L 164.0,191.1 L 164.5,191.2 L 166.7,191.1 L 169.4,190.8 L 169.9,190.7 L 171.7,190.5 L 172.3,190.4 L 177.9,189.9 L 178.3,189.8 L 183.1,189.1 L 183.7,189.0 L 185.8,188.7 L 188.3,188.3 L 190.4,188.0 L 190.8,188.0 L 192.1,187.7 L 195.6,187.1 L 197.1,186.8 L 197.7,186.9 L 203.2,185.8 L 203.8,185.7 L 209.2,184.6 L 209.8,184.4 L 214.4,183.3 L 214.9,183.3 L 217.6,182.7 L 221.3,181.7 L 221.8,181.7 L 222.7,181.4 L 224.6,180.9 L 226.0,180.8 L 228.0,180.2 L 228.4,180.2 L 231.3,179.4 L 234.6,178.6 L 235.0,178.5 L 240.2,177.2 L 241.3,176.9 L 241.8,176.8 L 245.0,176.1 L 247.4,175.4 L 247.7,175.4 L 252.9,173.5 L 253.3,173.3 L 255.8,172.2 L 259.3,170.9 L 259.6,170.7 L 262.0,169.7 L 264.3,168.8 L 265.0,168.5 L 265.5,168.5 L 266.0,168.3 L 268.3,167.3 L 270.0,166.6 L 271.3,166.1 L 271.7,165.9 L 273.3,165.2 L 276.5,163.7 L 277.0,163.6 L 280.5,161.9 L 283.0,160.6 L 283.4,160.4 L 285.2,159.8 L 285.9,159.3 L 286.7,159.1 L 287.7,158.7 L 289.7,158.6 L 290.2,158.5 L 292.4,159.1 L 293.3,159.1 L 294.3,158.6 L 295.8,158.3 L 296.8,157.9 L 296.9,157.8 L 299.9,155.7 L 302.3,154.2 L 302.7,153.9 L 304.8,153.3 L 305.7,152.8 L 307.5,151.5 L 309.5,150.7 L 309.9,150.5 L 311.9,150.3 L 313.5,149.9 L 314.9,149.8 L 316.0,149.3 L 316.3,149.1 L 318.0,148.1 L 320.4,147.4 L 321.4,147.8 L 323.2,147.4 L 324.0,147.1 L 324.9,147.6 L 325.7,147.5 L 327.3,147.5 L 329.4,146.6 L 330.7,146.4 L 331.1,146.4 L 332.8,145.7 L 336.3,143.7 L 336.9,143.2 L 340.8,140.4 L 341.7,139.6 L 343.5,137.8 L 343.9,137.5 L 346.8,135.5 L 349.3,135.5 L 350.8,135.9 L 351.3,135.7 L 351.9,135.9 L 354.4,134.1 L 357.1,132.6 L 357.5,132.4 L 358.8,131.5 L 362.7,127.9 L 363.1,127.5 L 365.0,125.8 L 365.8,125.1 L 367.6,124.6 L 369.5,124.5 L 369.9,124.6 L 370.9,125.0 L 372.5,126.4 L 375.3,127.0 L 375.9,126.8 L 376.6,127.0 L 377.4,127.6 L 381.9,129.0 L 382.4,129.2 L 384.5,130.0 L 388.0,132.3 L 388.5,132.6 L 390.0,133.8 L 392.0,134.6 L 393.8,134.2 L 394.3,133.9 L 396.6,132.5 L 397.8,131.4 L 402.6,129.5 L 403.2,129.3 L 404.1,129.0 L 405.3,127.8 L 407.1,126.8 L 408.7,125.3 L 409.2,124.8 L 412.1,122.0 L 414.6,119.8 L 415.1,119.4 L 418.2,116.7 L 419.0,116.2 L 421.8,115.6 L 422.3,115.7 L 423.7,116.6 L 425.0,117.8 L 425.9,117.2 L 426.8,117.7 L 427.6,117.5 L 429.1,116.7 L 429.4,116.3 L 433.7,113.5 L 434.9,112.3 L 435.2,112.0 L 437.3,110.2 L 438.0,109.8 L 439.5,109.5 L 441.8,110.2 L 442.2,110.4 L 443.6,110.6 L 447.0,112.4 L 448.4,111.9 L 449.6,112.1 L 450.6,112.4 L 453.2,113.3 L 455.7,113.1 L 456.3,113.1 L 458.0,113.3 L 460.3,113.2 L 461.4,113.4 L 461.8,113.5 L 464.1,114.1 L 464.9,113.9 L 467.5,112.7 L 468.5,112.1 L 468.9,112.0 L 471.2,110.4 L 472.0,110.0 L 473.4,110.0 L 474.5,110.3 L 475.4,109.7 L 476.1,109.3 L 480.2,108.2 L 481.3,107.7 L 481.9,107.4 L 483.1,107.2 L 485.6,107.2 L 487.3,106.8 L 487.8,106.7 L 489.8,106.0 L 492.7,104.5 L 493.3,104.2 L 497.6,101.3 L 498.1,101.1 L 498.6,100.8 L 500.3,100.2 L 502.4,100.5 L 505.1,101.5 L 506.0,101.7 L 509.5,101.8 L 510.9,102.2 L 512.1,102.3 L 512.6,102.0 L 513.2,101.6 L 514.8,100.5 L 517.4,99.2 L 518.5,98.3 L 519.1,97.9 L 521.6,96.3 L 525.0,94.0 L 525.2,93.9 L 526.6,93.4 L 528.6,94.8 L 532.1,94.5 L 533.0,94.6 L 533.8,94.3 L 535.3,94.5 L 539.3,95.3 L 539.8,95.3 L 544.9,94.4 L 545.5,94.4 L 546.4,94.7 L 548.9,94.4 L 550.8,95.1 L 551.2,95.3 L 552.4,95.9 L 555.1,94.6 L 556.7,94.6 L 557.9,93.8 L 558.4,93.3 L 560.8,91.4 L 562.6,89.9 L 563.8,89.2 L 564.2,89.0 L 566.9,88.7 L 567.8,88.3 L 570.3,87.6 L 570.7,87.5 L 571.9,87.1 L 573.4,86.1 L 574.4,85.7 L 575.9,84.7 L 577.4,84.0 L 578.7,83.0 L 579.2,82.7 L 584.4,79.6 L 585.8,79.7 L 586.3,79.8 L 586.8,79.7 L 590.5,78.4 L 591.6,78.6 L 592.2,78.8 L 594.2,79.4 L 595.0,79.5 L 596.7,78.7 L 599.2,78.1 L 599.9,77.9 L 602.8,76.8 L 605.1,76.3 L 605.7,76.2 L 609.0,76.2 L 609.8,76.0 L 611.3,75.2 L 611.8,75.0 L 615.8,74.4 L 618.8,73.5 L 619.2,73.5 L 620.4,73.2 L 621.1,73.2 L 622.2,72.9 L 625.2,72.7 L 625.6,72.8 L 627.6,72.4 L 629.9,72.6 L 631.6,73.1 L 632.0,73.0 L 632.2,73.0 L 633.0,73.1 L 634.5,73.2 L 636.2,73.1 L 637.8,73.2 L 638.2,73.3 L 641.3,73.6 L 642.0,73.6 L 643.0,73.8 L 643.8,73.7 L 646.4,74.2 L 647.3,74.0 L 647.7,74.1 L 648.9,74.1 L 651.2,74.0 L 653.5,74.1 L 653.8,74.1 L 656.4,74.2 L 657.3,74.1 L 658.2,74.2 L 658.8,74.0 L 659.8,73.8 L 660.4,73.7 L 660.9,73.5 L 661.8,73.4 L 663.7,73.8 L 665.5,73.8 L 666.4,74.0 L 667.5,74.1 L 667.8,74.1 L 668.7,73.9 L 671.1,74.2 L 671.9,74.3 L 673.2,74.4 L 674.0,74.3 L 674.0,74.3 L 674.7,74.5 L 675.6,74.7 L 677.5,74.7 L 678.7,75.0 L 679.8,74.8 L 680.4,74.5 L 681.5,74.1 L 683.5,74.5 L 686.2,74.4 L 686.5,74.5 L 689.3,74.3 L 690.9,75.0 L 692.6,75.0 L 694.1,75.4 L 694.8,75.6 L 697.3,76.0 L 698.2,76.4 L 699.1,77.0 L 700.0,77.2 L 701.2,77.7 L 702.1,78.1 L 703.2,78.8 L 706.6,80.0 L 708.4,80.9 L 708.8,81.1 L 714.3,81.7 L 714.7,81.5 L 715.2,81.2 L 718.2,79.9 L 719.4,80.6 L 720.2,80.9 L 720.5,81.0 L 720.7,81.0 L 722.3,81.9 L 723.4,82.4 L 723.9,82.7 L 725.1,83.0 L 726.0,83.4 L 727.0,83.6 L 727.2,83.7 L 728.1,83.9 L 728.8,84.1 L 731.0,84.4 L 733.7,84.2 L 734.5,84.2 L 737.6,84.6 L 741.2,85.9 L 741.7,86.1 L 744.0,87.2 L 744.8,87.4 L 746.1,87.2 L 747.2,86.5 L 747.5,86.4 L 748.3,86.7 L 749.0,86.5 L 751.6,85.2 L 752.5,84.7 L 752.7,84.7 L 754.5,83.8 L 756.2,83.5 L 759.2,82.2 L 760.2,82.0 L 760.6,81.9 L 762.2,81.6 L 763.7,80.8 L 765.4,79.9 L 766.5,79.5 L 767.0,79.3 L 769.9,78.1 L 771.6,77.1 L 773.5,75.9 L 773.9,75.8 L 775.0,75.2 L 775.8,74.7 L 779.2,72.7 L 780.4,72.1 L 781.0,71.9 L 781.6,71.6 L 782.4,71.1 L 783.0,70.9 L 785.7,69.3 L 787.4,68.6 L 788.0,68.1 L 788.6,67.9 L 791.2,66.5 L 794.3,64.5 L 794.8,64.3 L 796.9,63.2 L 799.2,61.6 L 801.3,60.2 L 801.8,59.9 L 806.0,57.8 L 807.8,56.8 L 807.9,56.9 L 809.0,56.2 L 810.6,55.4 L 812.0,55.1 L 813.6,55.0 L 814.7,55.0 L 816.4,55.4 L 818.0,54.5 L 819.4,54.2 L 820.4,54.4 L 820.6,54.5 L 821.6,54.3 L 824.2,53.5 L 825.9,53.4 L 826.4,52.9 L 826.9,52.5 L 828.8,51.1 L 831.6,47.6 L 832.7,46.4 L 833.0,46.4 L 833.6,45.5 L 835.9,43.0 L 837.7,40.7 L 838.9,39.4 L 839.2,39.1 L 841.9,38.4 L 844.2,36.3 L 845.5,34.5 L 845.8,34.3 L 847.6,32.0 L 849.1,30.2 L 849.9,29.3 L 851.7,30.3 L 851.8,30.2 L 852.8,28.9 L 853.6,29.1 L 855.1,30.2 L 857.6,27.3 L 858.0,27.3 L 860.3,27.2 L 861.8,25.7 L 863.0,26.2 L 864.0,25.4 L 864.3,25.0 L 870.9,18.0 L 871.2,17.7 L 873.9,17.6 L 875.6,16.0 L 877.3,14.6 L 877.6,14.4 L 880.3,11.8 L 883.8,8.3 L 884.0,8.1 L 884.9,7.3 L 886.5,6.1 L 890.0,4.3 L 890.1,4.4 L 892.6,3.8 L 893.5,4.0 L 894.4,3.6 L 896.4,4.1 L 896.7,4.1 L 897.8,3.9 L 899.5,2.5 L 900.0,2.0 L 900,220 L 0,220 Z" />
+  <path class="elev-line" d="M 0.0,208.0 L 0.4,207.9 L 0.6,208.0 L 1.5,207.7 L 3.1,208.7 L 5.5,209.7 L 6.8,210.2 L 7.3,210.4 L 10.0,211.4 L 12.1,212.4 L 12.7,212.5 L 14.9,213.0 L 16.4,213.8 L 17.4,214.0 L 17.9,214.1 L 20.5,214.3 L 23.0,214.9 L 23.4,214.9 L 24.4,215.0 L 28.1,214.4 L 28.6,214.3 L 30.3,214.0 L 32.3,213.9 L 33.3,213.6 L 33.8,213.4 L 35.5,212.9 L 38.8,212.8 L 39.3,212.8 L 41.4,212.9 L 44.8,212.6 L 45.3,212.6 L 48.8,213.1 L 51.7,213.9 L 52.1,214.0 L 53.2,214.1 L 56.3,214.5 L 58.2,215.0 L 58.6,215.2 L 59.9,215.5 L 61.9,215.6 L 63.6,216.2 L 64.1,216.4 L 66.6,216.8 L 68.7,217.5 L 69.2,217.6 L 73.9,218.0 L 74.4,217.9 L 78.3,218.0 L 81.0,217.4 L 81.4,217.1 L 87.7,214.4 L 88.0,214.3 L 90.5,213.2 L 93.8,211.2 L 94.2,211.0 L 100.3,208.1 L 100.6,207.9 L 106.5,205.5 L 106.9,205.4 L 111.0,203.4 L 113.8,202.9 L 114.3,203.0 L 115.3,202.9 L 117.5,202.2 L 118.8,202.1 L 120.1,201.7 L 120.5,201.5 L 124.9,200.6 L 125.8,200.1 L 126.9,199.7 L 127.2,199.6 L 129.2,199.2 L 130.2,198.8 L 130.8,198.5 L 133.1,197.6 L 133.5,197.6 L 134.6,197.1 L 136.9,195.9 L 139.6,194.7 L 140.0,194.5 L 141.8,193.7 L 143.2,193.0 L 144.8,192.2 L 145.9,191.9 L 146.0,192.0 L 147.0,191.6 L 149.8,191.5 L 151.9,191.6 L 152.5,191.6 L 154.3,191.7 L 157.8,191.5 L 158.3,191.5 L 164.0,191.1 L 164.5,191.2 L 166.7,191.1 L 169.4,190.8 L 169.9,190.7 L 171.7,190.5 L 172.3,190.4 L 177.9,189.9 L 178.3,189.8 L 183.1,189.1 L 183.7,189.0 L 185.8,188.7 L 188.3,188.3 L 190.4,188.0 L 190.8,188.0 L 192.1,187.7 L 195.6,187.1 L 197.1,186.8 L 197.7,186.9 L 203.2,185.8 L 203.8,185.7 L 209.2,184.6 L 209.8,184.4 L 214.4,183.3 L 214.9,183.3 L 217.6,182.7 L 221.3,181.7 L 221.8,181.7 L 222.7,181.4 L 224.6,180.9 L 226.0,180.8 L 228.0,180.2 L 228.4,180.2 L 231.3,179.4 L 234.6,178.6 L 235.0,178.5 L 240.2,177.2 L 241.3,176.9 L 241.8,176.8 L 245.0,176.1 L 247.4,175.4 L 247.7,175.4 L 252.9,173.5 L 253.3,173.3 L 255.8,172.2 L 259.3,170.9 L 259.6,170.7 L 262.0,169.7 L 264.3,168.8 L 265.0,168.5 L 265.5,168.5 L 266.0,168.3 L 268.3,167.3 L 270.0,166.6 L 271.3,166.1 L 271.7,165.9 L 273.3,165.2 L 276.5,163.7 L 277.0,163.6 L 280.5,161.9 L 283.0,160.6 L 283.4,160.4 L 285.2,159.8 L 285.9,159.3 L 286.7,159.1 L 287.7,158.7 L 289.7,158.6 L 290.2,158.5 L 292.4,159.1 L 293.3,159.1 L 294.3,158.6 L 295.8,158.3 L 296.8,157.9 L 296.9,157.8 L 299.9,155.7 L 302.3,154.2 L 302.7,153.9 L 304.8,153.3 L 305.7,152.8 L 307.5,151.5 L 309.5,150.7 L 309.9,150.5 L 311.9,150.3 L 313.5,149.9 L 314.9,149.8 L 316.0,149.3 L 316.3,149.1 L 318.0,148.1 L 320.4,147.4 L 321.4,147.8 L 323.2,147.4 L 324.0,147.1 L 324.9,147.6 L 325.7,147.5 L 327.3,147.5 L 329.4,146.6 L 330.7,146.4 L 331.1,146.4 L 332.8,145.7 L 336.3,143.7 L 336.9,143.2 L 340.8,140.4 L 341.7,139.6 L 343.5,137.8 L 343.9,137.5 L 346.8,135.5 L 349.3,135.5 L 350.8,135.9 L 351.3,135.7 L 351.9,135.9 L 354.4,134.1 L 357.1,132.6 L 357.5,132.4 L 358.8,131.5 L 362.7,127.9 L 363.1,127.5 L 365.0,125.8 L 365.8,125.1 L 367.6,124.6 L 369.5,124.5 L 369.9,124.6 L 370.9,125.0 L 372.5,126.4 L 375.3,127.0 L 375.9,126.8 L 376.6,127.0 L 377.4,127.6 L 381.9,129.0 L 382.4,129.2 L 384.5,130.0 L 388.0,132.3 L 388.5,132.6 L 390.0,133.8 L 392.0,134.6 L 393.8,134.2 L 394.3,133.9 L 396.6,132.5 L 397.8,131.4 L 402.6,129.5 L 403.2,129.3 L 404.1,129.0 L 405.3,127.8 L 407.1,126.8 L 408.7,125.3 L 409.2,124.8 L 412.1,122.0 L 414.6,119.8 L 415.1,119.4 L 418.2,116.7 L 419.0,116.2 L 421.8,115.6 L 422.3,115.7 L 423.7,116.6 L 425.0,117.8 L 425.9,117.2 L 426.8,117.7 L 427.6,117.5 L 429.1,116.7 L 429.4,116.3 L 433.7,113.5 L 434.9,112.3 L 435.2,112.0 L 437.3,110.2 L 438.0,109.8 L 439.5,109.5 L 441.8,110.2 L 442.2,110.4 L 443.6,110.6 L 447.0,112.4 L 448.4,111.9 L 449.6,112.1 L 450.6,112.4 L 453.2,113.3 L 455.7,113.1 L 456.3,113.1 L 458.0,113.3 L 460.3,113.2 L 461.4,113.4 L 461.8,113.5 L 464.1,114.1 L 464.9,113.9 L 467.5,112.7 L 468.5,112.1 L 468.9,112.0 L 471.2,110.4 L 472.0,110.0 L 473.4,110.0 L 474.5,110.3 L 475.4,109.7 L 476.1,109.3 L 480.2,108.2 L 481.3,107.7 L 481.9,107.4 L 483.1,107.2 L 485.6,107.2 L 487.3,106.8 L 487.8,106.7 L 489.8,106.0 L 492.7,104.5 L 493.3,104.2 L 497.6,101.3 L 498.1,101.1 L 498.6,100.8 L 500.3,100.2 L 502.4,100.5 L 505.1,101.5 L 506.0,101.7 L 509.5,101.8 L 510.9,102.2 L 512.1,102.3 L 512.6,102.0 L 513.2,101.6 L 514.8,100.5 L 517.4,99.2 L 518.5,98.3 L 519.1,97.9 L 521.6,96.3 L 525.0,94.0 L 525.2,93.9 L 526.6,93.4 L 528.6,94.8 L 532.1,94.5 L 533.0,94.6 L 533.8,94.3 L 535.3,94.5 L 539.3,95.3 L 539.8,95.3 L 544.9,94.4 L 545.5,94.4 L 546.4,94.7 L 548.9,94.4 L 550.8,95.1 L 551.2,95.3 L 552.4,95.9 L 555.1,94.6 L 556.7,94.6 L 557.9,93.8 L 558.4,93.3 L 560.8,91.4 L 562.6,89.9 L 563.8,89.2 L 564.2,89.0 L 566.9,88.7 L 567.8,88.3 L 570.3,87.6 L 570.7,87.5 L 571.9,87.1 L 573.4,86.1 L 574.4,85.7 L 575.9,84.7 L 577.4,84.0 L 578.7,83.0 L 579.2,82.7 L 584.4,79.6 L 585.8,79.7 L 586.3,79.8 L 586.8,79.7 L 590.5,78.4 L 591.6,78.6 L 592.2,78.8 L 594.2,79.4 L 595.0,79.5 L 596.7,78.7 L 599.2,78.1 L 599.9,77.9 L 602.8,76.8 L 605.1,76.3 L 605.7,76.2 L 609.0,76.2 L 609.8,76.0 L 611.3,75.2 L 611.8,75.0 L 615.8,74.4 L 618.8,73.5 L 619.2,73.5 L 620.4,73.2 L 621.1,73.2 L 622.2,72.9 L 625.2,72.7 L 625.6,72.8 L 627.6,72.4 L 629.9,72.6 L 631.6,73.1 L 632.0,73.0 L 632.2,73.0 L 633.0,73.1 L 634.5,73.2 L 636.2,73.1 L 637.8,73.2 L 638.2,73.3 L 641.3,73.6 L 642.0,73.6 L 643.0,73.8 L 643.8,73.7 L 646.4,74.2 L 647.3,74.0 L 647.7,74.1 L 648.9,74.1 L 651.2,74.0 L 653.5,74.1 L 653.8,74.1 L 656.4,74.2 L 657.3,74.1 L 658.2,74.2 L 658.8,74.0 L 659.8,73.8 L 660.4,73.7 L 660.9,73.5 L 661.8,73.4 L 663.7,73.8 L 665.5,73.8 L 666.4,74.0 L 667.5,74.1 L 667.8,74.1 L 668.7,73.9 L 671.1,74.2 L 671.9,74.3 L 673.2,74.4 L 674.0,74.3 L 674.0,74.3 L 674.7,74.5 L 675.6,74.7 L 677.5,74.7 L 678.7,75.0 L 679.8,74.8 L 680.4,74.5 L 681.5,74.1 L 683.5,74.5 L 686.2,74.4 L 686.5,74.5 L 689.3,74.3 L 690.9,75.0 L 692.6,75.0 L 694.1,75.4 L 694.8,75.6 L 697.3,76.0 L 698.2,76.4 L 699.1,77.0 L 700.0,77.2 L 701.2,77.7 L 702.1,78.1 L 703.2,78.8 L 706.6,80.0 L 708.4,80.9 L 708.8,81.1 L 714.3,81.7 L 714.7,81.5 L 715.2,81.2 L 718.2,79.9 L 719.4,80.6 L 720.2,80.9 L 720.5,81.0 L 720.7,81.0 L 722.3,81.9 L 723.4,82.4 L 723.9,82.7 L 725.1,83.0 L 726.0,83.4 L 727.0,83.6 L 727.2,83.7 L 728.1,83.9 L 728.8,84.1 L 731.0,84.4 L 733.7,84.2 L 734.5,84.2 L 737.6,84.6 L 741.2,85.9 L 741.7,86.1 L 744.0,87.2 L 744.8,87.4 L 746.1,87.2 L 747.2,86.5 L 747.5,86.4 L 748.3,86.7 L 749.0,86.5 L 751.6,85.2 L 752.5,84.7 L 752.7,84.7 L 754.5,83.8 L 756.2,83.5 L 759.2,82.2 L 760.2,82.0 L 760.6,81.9 L 762.2,81.6 L 763.7,80.8 L 765.4,79.9 L 766.5,79.5 L 767.0,79.3 L 769.9,78.1 L 771.6,77.1 L 773.5,75.9 L 773.9,75.8 L 775.0,75.2 L 775.8,74.7 L 779.2,72.7 L 780.4,72.1 L 781.0,71.9 L 781.6,71.6 L 782.4,71.1 L 783.0,70.9 L 785.7,69.3 L 787.4,68.6 L 788.0,68.1 L 788.6,67.9 L 791.2,66.5 L 794.3,64.5 L 794.8,64.3 L 796.9,63.2 L 799.2,61.6 L 801.3,60.2 L 801.8,59.9 L 806.0,57.8 L 807.8,56.8 L 807.9,56.9 L 809.0,56.2 L 810.6,55.4 L 812.0,55.1 L 813.6,55.0 L 814.7,55.0 L 816.4,55.4 L 818.0,54.5 L 819.4,54.2 L 820.4,54.4 L 820.6,54.5 L 821.6,54.3 L 824.2,53.5 L 825.9,53.4 L 826.4,52.9 L 826.9,52.5 L 828.8,51.1 L 831.6,47.6 L 832.7,46.4 L 833.0,46.4 L 833.6,45.5 L 835.9,43.0 L 837.7,40.7 L 838.9,39.4 L 839.2,39.1 L 841.9,38.4 L 844.2,36.3 L 845.5,34.5 L 845.8,34.3 L 847.6,32.0 L 849.1,30.2 L 849.9,29.3 L 851.7,30.3 L 851.8,30.2 L 852.8,28.9 L 853.6,29.1 L 855.1,30.2 L 857.6,27.3 L 858.0,27.3 L 860.3,27.2 L 861.8,25.7 L 863.0,26.2 L 864.0,25.4 L 864.3,25.0 L 870.9,18.0 L 871.2,17.7 L 873.9,17.6 L 875.6,16.0 L 877.3,14.6 L 877.6,14.4 L 880.3,11.8 L 883.8,8.3 L 884.0,8.1 L 884.9,7.3 L 886.5,6.1 L 890.0,4.3 L 890.1,4.4 L 892.6,3.8 L 893.5,4.0 L 894.4,3.6 L 896.4,4.1 L 896.7,4.1 L 897.8,3.9 L 899.5,2.5 L 900.0,2.0" />
+  <circle class="ec-wp" data-wp="1" cx="5.5" cy="209.7" r="4.5"/>
+<circle class="ec-wp" data-wp="2" cx="78.3" cy="218.0" r="4.5"/>
+<circle class="ec-wp" data-wp="3" cx="285.9" cy="159.3" r="4.5"/>
+<circle class="ec-wp" data-wp="4" cx="287.7" cy="158.7" r="4.5"/>
+<circle class="ec-wp" data-wp="5" cx="615.8" cy="74.4" r="4.5"/>
+<circle class="ec-wp" data-wp="6" cx="826.9" cy="52.5" r="4.5"/>
+  <text class="elev-peak-label" x="898" y="10" text-anchor="middle">Botánica y Micromundo · 3328 m</text>
+  <text class="elev-axis-label" x="0" y="202">0 km</text>
+  <text class="elev-axis-label" x="900" y="202" text-anchor="end">2.0 km</text>
+</svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Puntos de referencia</span>
+          <span class="card-hint">en orden del recorrido</span>
+        </div>
+        <ul class="wp-list">
+<li class="wp-item" data-wp="1">
+<button class="wp-item-toggle" data-wp="1" aria-expanded="false" aria-controls="wp-panel-1">
+<span class="wp-item-num cat-start">1</span>
+<span class="wp-item-body"><span class="wp-item-title">Barrio Tihuaque · llegada en transporte público</span><span class="wp-item-meta">Inicio · transporte público · 3061 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-1" hidden>
+<img src="Imagenes%20Mapas/Bot%C3%A1nica%20y%20Micromundo%20de%20los%20Cerros%20Orientales%20de%20Bogot%C3%A1%20Imagenes/Foto%20de%20Ruta%20Botanica%20y%20micromundo%20(1-6).jpg" alt="Barrio Tihuaque · llegada en transporte público" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="2">
+<button class="wp-item-toggle" data-wp="2" aria-expanded="false" aria-controls="wp-panel-2">
+<span class="wp-item-num cat-poi">2</span>
+<span class="wp-item-body"><span class="wp-item-title">Desvío al Barrio Las Violetas</span><span class="wp-item-meta">Desvío · 3051 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-2" hidden>
+<img src="Imagenes%20Mapas/Bot%C3%A1nica%20y%20Micromundo%20de%20los%20Cerros%20Orientales%20de%20Bogot%C3%A1%20Imagenes/Foto%20de%20Ruta%20Botanica%20y%20micromundo%20(2-6).jpg" alt="Desvío al Barrio Las Violetas" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="3">
+<button class="wp-item-toggle" data-wp="3" aria-expanded="false" aria-controls="wp-panel-3">
+<span class="wp-item-num cat-nature">3</span>
+<span class="wp-item-body"><span class="wp-item-title">Parque Las Violetas · inicio de caminata botánica</span><span class="wp-item-meta">Naturaleza · 3126 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-3" hidden>
+<img src="Imagenes%20Mapas/Bot%C3%A1nica%20y%20Micromundo%20de%20los%20Cerros%20Orientales%20de%20Bogot%C3%A1%20Imagenes/Foto%20de%20Ruta%20Botanica%20y%20micromundo%20(3-6).jpg" alt="Parque Las Violetas · inicio de caminata botánica" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="4">
+<button class="wp-item-toggle" data-wp="4" aria-expanded="false" aria-controls="wp-panel-4">
+<span class="wp-item-num cat-nature">4</span>
+<span class="wp-item-body"><span class="wp-item-title">Inicio de guianza e interpretación ambiental</span><span class="wp-item-meta">Naturaleza · 3127 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-4" hidden>
+<img src="Imagenes%20Mapas/Bot%C3%A1nica%20y%20Micromundo%20de%20los%20Cerros%20Orientales%20de%20Bogot%C3%A1%20Imagenes/Foto%20de%20Ruta%20Botanica%20y%20micromundo%20(4-6).jpg" alt="Inicio de guianza e interpretación ambiental" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="5">
+<button class="wp-item-toggle" data-wp="5" aria-expanded="false" aria-controls="wp-panel-5">
+<span class="wp-item-num cat-door">5</span>
+<span class="wp-item-body"><span class="wp-item-title">Portón del tanque de agua · inicio camino no pavimentado</span><span class="wp-item-meta">Portón / desvío · 3235 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-5" hidden>
+<img src="Imagenes%20Mapas/Bot%C3%A1nica%20y%20Micromundo%20de%20los%20Cerros%20Orientales%20de%20Bogot%C3%A1%20Imagenes/Foto%20de%20Ruta%20Botanica%20y%20micromundo%20(5-6).jpg" alt="Portón del tanque de agua · inicio camino no pavimentado" loading="lazy">
+</div>
+</li>
+<li class="wp-item" data-wp="6">
+<button class="wp-item-toggle" data-wp="6" aria-expanded="false" aria-controls="wp-panel-6">
+<span class="wp-item-num cat-end">6</span>
+<span class="wp-item-body"><span class="wp-item-title">Quebrada La Yomasa · cascada, fin del recorrido</span><span class="wp-item-meta">Fin · cascada · 3263 m s. n. m.</span></span>
+<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="wp-item-panel" id="wp-panel-6" hidden>
+<img src="Imagenes%20Mapas/Bot%C3%A1nica%20y%20Micromundo%20de%20los%20Cerros%20Orientales%20de%20Bogot%C3%A1%20Imagenes/Foto%20de%20Ruta%20Botanica%20y%20micromundo%20(6-6).jpg" alt="Quebrada La Yomasa · cascada, fin del recorrido" loading="lazy">
+</div>
+</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card gmap-card">
+    <div class="card-head">
+      <span class="card-title">Google Maps</span>
+      <span class="card-hint">mapa interactivo con el trazado real</span>
+    </div>
+    <div class="gmap-embed">
+      <iframe src="https://www.google.com/maps/d/embed?mid=1_VjW7dxJPanD_CGPSeMJZeIkM00hpEk" loading="lazy" allowfullscreen title="Trazado de Botánica y Micromundo de los Cerros Orientales de Bogotá en Google Maps"></iframe>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Cedeinco / San Cristóbal · mapas de rutas de senderismo.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var markers = Array.prototype.slice.call(document.querySelectorAll('.wp'));
+  var items = Array.prototype.slice.call(document.querySelectorAll('.wp-item'));
+  var ecDots = Array.prototype.slice.call(document.querySelectorAll('.ec-wp'));
+
+  function setActive(id){
+    markers.forEach(function(m){ m.classList.toggle('active', m.dataset.wp === id); });
+    items.forEach(function(it){ it.classList.toggle('active', it.dataset.wp === id); });
+    ecDots.forEach(function(dt){ dt.classList.toggle('active', dt.dataset.wp === id); });
+  }
+  function clearActive(){
+    markers.forEach(function(m){ m.classList.remove('active'); });
+    items.forEach(function(it){ it.classList.remove('active'); });
+    ecDots.forEach(function(dt){ dt.classList.remove('active'); });
+  }
+
+  [].concat(markers, items, ecDots).forEach(function(el){
+    el.addEventListener('mouseenter', function(){ setActive(el.dataset.wp); });
+    el.addEventListener('focus', function(){ setActive(el.dataset.wp); });
+    el.addEventListener('click', function(){ setActive(el.dataset.wp); });
+  });
+  var mapCard = document.querySelector('.map-figure');
+  var listCard = document.querySelector('.wp-list');
+  [mapCard, listCard].forEach(function(c){
+    if(c) c.addEventListener('mouseleave', clearActive);
+  });
+
+  var toggles = Array.prototype.slice.call(document.querySelectorAll('.wp-item-toggle'));
+  toggles.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var panel = document.getElementById('wp-panel-' + btn.dataset.wp);
+      var isOpen = btn.getAttribute('aria-expanded') === 'true';
+      toggles.forEach(function(other){
+        if (other === btn) return;
+        other.setAttribute('aria-expanded', 'false');
+        var op = document.getElementById('wp-panel-' + other.dataset.wp);
+        if (op) op.hidden = true;
+      });
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if (panel) panel.hidden = isOpen;
+      if (!isOpen && panel) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
