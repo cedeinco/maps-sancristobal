@@ -9,7 +9,7 @@
 
   // ⚠️ Reemplaza esta URL por la de tu Web App de Apps Script
   // (Implementar > Nueva implementación > Aplicación web > Acceso: Cualquier usuario)
-  var API_URL = "https://script.google.com/macros/s/REEMPLAZA_ESTE_ID/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbyZ032kAqh9sQtwRANRdb8gJNMGa3feQSnfFTP7QAQfKDFF0AWND5cLilYWaXUG9pdw/exec";
 
   var CUPO_MAXIMO = 30;
   var FECHA_RUTA = "";
