@@ -9,9 +9,11 @@
 
   // ⚠️ Reemplaza esta URL por la de tu Web App de Apps Script
   // (Implementar > Nueva implementación > Aplicación web > Acceso: Cualquier usuario)
-  var API_URL = "https://script.google.com/macros/s/AKfycbyZ032kAqh9sQtwRANRdb8gJNMGa3feQSnfFTP7QAQfKDFF0AWND5cLilYWaXUG9pdw/exec";
+  var API_URL = "https://script.google.com/macros/s/REEMPLAZA_ESTE_ID/exec";
 
   var CUPO_MAXIMO = 30;
+  var FECHA_RUTA = "";
+  var HORARIO_RUTA = "";
 
   var currentScript = document.currentScript;
   var RUTA_SLUG = currentScript ? currentScript.getAttribute("data-ruta") : null;
@@ -43,6 +45,8 @@
     + ".insc-submit:hover{filter:brightness(0.94);}"
     + ".insc-submit[disabled]{opacity:0.6;cursor:default;}"
     + ".insc-msg{font-size:13px;padding:10px 12px;border-radius:9px;margin-bottom:14px;line-height:1.4;}"
+    + ".insc-fecha{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text-muted);margin:0 0 24px;}"
+    + ".insc-fecha svg{flex:none;color:var(--accent);}"
     + ".insc-msg.error{background:#f6d9d0;color:#7a2e12;}"
     + ".insc-msg.ok{background:#dcecd9;color:#1c3320;}"
     + ":root:not([data-theme=\"light\"]) .insc-msg.error{background:#3a2018;color:#f3b39c;}"
@@ -71,6 +75,16 @@
   actions.appendChild(btn);
   btn.disabled = true;
 
+  var fechaLine = document.createElement("p");
+  fechaLine.className = "insc-fecha";
+  fechaLine.style.display = "none";
+  fechaLine.innerHTML =
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9.5h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
+    '<span></span>';
+  if (actions.parentNode) {
+    actions.parentNode.insertBefore(fechaLine, actions.nextSibling);
+  }
+
   /* ---------------- modal ---------------- */
   var overlay = document.createElement("div");
   overlay.className = "insc-overlay";
@@ -96,9 +110,12 @@
   });
 
   function renderForm(routeName, disponibles) {
+    var fechaHorario = (FECHA_RUTA ? FECHA_RUTA : "") + (FECHA_RUTA && HORARIO_RUTA ? " · " : "") + (HORARIO_RUTA ? HORARIO_RUTA : "");
     modalBody.innerHTML =
       '<h3 class="insc-title" id="insc-title">Inscripción a la ruta</h3>' +
-      '<p class="insc-sub">' + routeName + ' · <span class="insc-cupos">' + disponibles + ' cupo' + (disponibles === 1 ? '' : 's') + ' disponible' + (disponibles === 1 ? '' : 's') + '</span> de ' + CUPO_MAXIMO + '</p>' +
+      '<p class="insc-sub">' + routeName + ' · <span class="insc-cupos">' + disponibles + ' cupo' + (disponibles === 1 ? '' : 's') + ' disponible' + (disponibles === 1 ? '' : 's') + '</span> de ' + CUPO_MAXIMO +
+        (fechaHorario ? '<br>' + fechaHorario : '') +
+      '</p>' +
       '<div id="insc-alert"></div>' +
       '<form id="insc-form">' +
         '<div class="insc-field"><label for="insc-nombre">Nombre y Apellido</label><input id="insc-nombre" name="nombre" type="text" required autocomplete="name"></div>' +
@@ -172,6 +189,19 @@
       '<p class="insc-sub">Ya se completaron los ' + CUPO_MAXIMO + ' cupos disponibles para <b>' + routeName + '</b>. Sigue las demás rutas del catálogo para más opciones.</p>';
   }
 
+  function updateFechaLine() {
+    if (!FECHA_RUTA && !HORARIO_RUTA) return;
+    var span = fechaLine.querySelector("span");
+    var texto = FECHA_RUTA ? capitalize_(FECHA_RUTA) : "";
+    if (HORARIO_RUTA) texto += (texto ? " · " : "") + HORARIO_RUTA;
+    span.textContent = texto;
+    fechaLine.style.display = "inline-flex";
+  }
+
+  function capitalize_(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
   var ROUTE_NAME = (document.querySelector("h1") || {}).textContent || "esta ruta";
   var lastDisponibles = null;
 
@@ -205,6 +235,9 @@
     .then(function (res) {
       if (res.ok) {
         if (typeof res.cupoMaximo === "number") CUPO_MAXIMO = res.cupoMaximo;
+        if (res.fecha) FECHA_RUTA = res.fecha;
+        if (res.horario) HORARIO_RUTA = res.horario;
+        updateFechaLine();
         updateButton(res.disponibles, res.cerrado);
       } else {
         btn.innerHTML = "Inscribirse";
