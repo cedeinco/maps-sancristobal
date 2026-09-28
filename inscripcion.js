@@ -154,12 +154,17 @@
         .then(function (res) {
           if (res.ok) {
             showSuccess(routeName);
-            updateButton(res.disponibles, res.cerrado);
+            updateButton(res.disponibles, res.cerrado, res.motivoCierre);
+          } else if (res.error === "inscripciones_cerradas") {
+            alertBox.innerHTML = '<div class="insc-msg error">Lo sentimos, las inscripciones para esta ruta se acaban de cerrar.</div>';
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Inscripciones cerradas";
+            updateButton(0, true, "manual");
           } else if (res.error === "cupos_agotados") {
             alertBox.innerHTML = '<div class="insc-msg error">Lo sentimos, los cupos para esta ruta se acaban de agotar.</div>';
             submitBtn.disabled = true;
             submitBtn.textContent = "Cupos agotados";
-            updateButton(0, true);
+            updateButton(0, true, "cupo");
           } else {
             alertBox.innerHTML = '<div class="insc-msg error">No se pudo completar la inscripción. Intenta de nuevo en unos minutos.</div>';
             submitBtn.disabled = false;
@@ -183,10 +188,16 @@
       '</div>';
   }
 
-  function renderClosed(routeName) {
-    modalBody.innerHTML =
-      '<h3 class="insc-title" id="insc-title">Cupos agotados</h3>' +
-      '<p class="insc-sub">Ya se completaron los ' + CUPO_MAXIMO + ' cupos disponibles para <b>' + routeName + '</b>. Sigue las demás rutas del catálogo para más opciones.</p>';
+  function renderClosed(routeName, motivo) {
+    if (motivo === "manual") {
+      modalBody.innerHTML =
+        '<h3 class="insc-title" id="insc-title">Inscripciones cerradas</h3>' +
+        '<p class="insc-sub">Por ahora no hay inscripciones abiertas para <b>' + routeName + '</b>. Sigue las demás rutas del catálogo para más opciones.</p>';
+    } else {
+      modalBody.innerHTML =
+        '<h3 class="insc-title" id="insc-title">Cupos agotados</h3>' +
+        '<p class="insc-sub">Ya se completaron los ' + CUPO_MAXIMO + ' cupos disponibles para <b>' + routeName + '</b>. Sigue las demás rutas del catálogo para más opciones.</p>';
+    }
   }
 
   function updateFechaLine() {
@@ -204,13 +215,21 @@
 
   var ROUTE_NAME = (document.querySelector("h1") || {}).textContent || "esta ruta";
   var lastDisponibles = null;
+  var lastMotivo = null;
 
-  function updateButton(disponibles, cerrado) {
+  function updateButton(disponibles, cerrado, motivo) {
     lastDisponibles = disponibles;
+    lastMotivo = motivo || null;
     var label = btn.querySelector(".insc-cupos");
+    if (motivo === "manual") {
+      // Cierre manual: se oculta solo el botón; la fecha/horario se mantiene visible.
+      btn.style.display = "none";
+      return;
+    }
+    btn.style.display = "";
     if (cerrado) {
       btn.disabled = true;
-      btn.innerHTML = 'Cupos agotados';
+      btn.innerHTML = "Cupos agotados";
     } else {
       btn.disabled = false;
       if (label) {
@@ -222,7 +241,7 @@
   btn.addEventListener("click", function () {
     if (btn.disabled) return;
     if (lastDisponibles !== null && lastDisponibles <= 0) {
-      renderClosed(ROUTE_NAME.trim());
+      renderClosed(ROUTE_NAME.trim(), lastMotivo);
     } else {
       renderForm(ROUTE_NAME.trim(), lastDisponibles === null ? CUPO_MAXIMO : lastDisponibles);
     }
@@ -238,7 +257,7 @@
         if (res.fecha) FECHA_RUTA = res.fecha;
         if (res.horario) HORARIO_RUTA = res.horario;
         updateFechaLine();
-        updateButton(res.disponibles, res.cerrado);
+        updateButton(res.disponibles, res.cerrado, res.motivoCierre);
       } else {
         btn.innerHTML = "Inscribirse";
         btn.disabled = false;
