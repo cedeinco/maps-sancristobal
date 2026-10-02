@@ -118,6 +118,25 @@
 .gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
 .gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 @media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
+
+.info-card { padding: 18px 20px; margin-bottom: 20px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 860px) { .info-grid { grid-template-columns: 1fr; } }
+.info-col { display: flex; flex-direction: column; gap: 14px; }
+.info-row { display: flex; flex-direction: column; gap: 3px; }
+.info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.info-value { font-size: 14px; line-height: 1.45; }
+.recom-details { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); align-self: start; }
+.recom-summary { cursor: pointer; list-style: none; padding: 12px 14px; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; user-select: none; color: var(--green-deep, var(--green)); }
+.recom-summary::-webkit-details-marker { display: none; }
+.recom-chevron { flex: none; color: var(--text-muted); transition: transform 0.15s ease; }
+.recom-details[open] .recom-chevron { transform: rotate(180deg); }
+.recom-list { margin: 0; padding: 4px 16px 14px 32px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.recom-list li { margin-bottom: 6px; }
+.recom-time { display: flex; align-items: center; gap: 7px; list-style: none; margin-left: -20px; margin-bottom: 10px !important; font-weight: 700; color: var(--text); }
+.recom-time svg { flex: none; color: var(--accent); }
+.recom-subhead { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--green-deep, var(--green)); margin: 14px 0 6px -16px; list-style: none; }
+.recom-subhead:first-of-type { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -157,8 +176,40 @@
     <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">3.0 <small>km</small></span></div>
     <div class="stat"><span class="stat-label">Desnivel</span><span class="stat-value">+131 <small>m</small></span></div>
     <div class="stat difficulty"><span class="stat-label">Dificultad</span><span class="stat-value">Fácil</span></div>
-    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">70 <small>min</small></span></div>
+    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">4 <small>h</small></span></div>
     <div class="stat"><span class="stat-label">Tipo</span><span class="stat-value">Circuito</span></div>
+  </div>
+
+  <div class="card info-card">
+    <div class="info-grid">
+      <div class="info-col">
+        <div class="info-row">
+          <span class="info-label">Guía</span>
+          <span class="info-value">Luz Adriana Peña Moreno</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Punto de encuentro</span>
+          <span class="info-value">Portería del Parque Entrenubes, sector El Triunfo</span>
+        </div>
+      </div>
+      <details class="recom-details">
+        <summary class="recom-summary">
+          <span>Recomendaciones</span>
+          <svg class="recom-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <ul class="recom-list">
+          <li class="recom-time"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Llegar 15 minutos antes de la hora programada</li>
+          <li>Llevar ropa cómoda</li>
+          <li>Zapatos cómodos y con buen agarre</li>
+          <li>Bloqueador solar, gorra, capa para la lluvia y/o sombrilla</li>
+          <li>Hidratación</li>
+          <li>Documentos y medicamentos personales</li>
+          <li>Bastón de apoyo (puede ser un palo)</li>
+          <li>Excelente actitud</li>
+          <li>Está prohibido el ingreso de mascotas al parque</li>
+        </ul>
+      </details>
+    </div>
   </div>
 
   <div class="grid">
