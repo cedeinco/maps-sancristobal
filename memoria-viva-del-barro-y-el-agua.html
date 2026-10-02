@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Memoria Viva del Barro y el Agua · Rutas San Cristóbal</title>
-<meta name="description" content="Ruta turística Corazón del 20 de Julio: historia, fe, cultura, gastronomía local y bienestar animal en un recorrido comunitario de San Cristóbal, Bogotá. Trazado, perfil de elevación y puntos de referencia.">
+<meta name="description" content="Ruta turística pet friendly en San Cristóbal, Bogotá: senderos y lugares que puedes recorrer junto a tu mascota. Trazado, perfil de elevación y puntos de referencia.">
 <meta name="color-scheme" content="light dark">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -118,6 +118,25 @@
 .gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
 .gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 @media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
+
+.info-card { padding: 18px 20px; margin-bottom: 20px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 860px) { .info-grid { grid-template-columns: 1fr; } }
+.info-col { display: flex; flex-direction: column; gap: 14px; }
+.info-row { display: flex; flex-direction: column; gap: 3px; }
+.info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.info-value { font-size: 14px; line-height: 1.45; }
+.recom-details { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); align-self: start; }
+.recom-summary { cursor: pointer; list-style: none; padding: 12px 14px; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; user-select: none; color: var(--green-deep, var(--green)); }
+.recom-summary::-webkit-details-marker { display: none; }
+.recom-chevron { flex: none; color: var(--text-muted); transition: transform 0.15s ease; }
+.recom-details[open] .recom-chevron { transform: rotate(180deg); }
+.recom-list { margin: 0; padding: 4px 16px 14px 32px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.recom-list li { margin-bottom: 6px; }
+.recom-time { display: flex; align-items: center; gap: 7px; list-style: none; margin-left: -20px; margin-bottom: 10px !important; font-weight: 700; color: var(--text); }
+.recom-time svg { flex: none; color: var(--accent); }
+.recom-subhead { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--green-deep, var(--green)); margin: 14px 0 6px -16px; list-style: none; }
+.recom-subhead:first-of-type { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -140,7 +159,7 @@
 
   <div class="eyebrow">San Cristóbal · Bogotá D.C.</div>
   <h1>Memoria Viva del Barro y el Agua</h1>
-  <p class="subtitle">¡Déjate sorprender por una experiencia única que transforma la forma de sentir y vivir el sur de Bogotá! Te invitamos a ser parte de “Corazón del 20 de Julio”, una ruta turística innovadora de cuatro horas donde la historia de casi un siglo, la fe y el esfuerzo de nuestra gente se entrelazan con la cultura, la inclusión, la gastronomía local, el bienestar animal y dinámicas pedagógicas súper entretenidas. Ven a caminar en comunidad por uno de los barrios más emblemáticos de la ciudad, descubre los secretos de su patrimonio y vive una jornada inolvidable pensada para disfrutar, aprender y conectar con el alma de nuestro territorio. ¡Una vivencia llena de tradición y calidez comunitaria que no te puedes perder!</p>
+  <p class="subtitle">¿Sabías que en San Cristóbal existen senderos y lugares que puedes visitar junto a tu animal de compañía? Te invitamos a vivir estas experiencias gratificantes y llenas de aprendizajes.</p>
 
   <div class="maps-actions">
     <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=4.58139,-74.090147&travelmode=walking" target="_blank" rel="noopener">
@@ -157,8 +176,48 @@
     <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">5.0 <small>km</small></span></div>
     <div class="stat"><span class="stat-label">Desnivel</span><span class="stat-value">+53 <small>m</small></span></div>
     <div class="stat difficulty"><span class="stat-label">Dificultad</span><span class="stat-value">Fácil</span></div>
-    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">80 <small>min</small></span></div>
+    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">4 <small>h</small></span></div>
     <div class="stat"><span class="stat-label">Tipo</span><span class="stat-value">Ida</span></div>
+  </div>
+
+  <div class="card info-card">
+    <div class="info-grid">
+      <div class="info-col">
+        <div class="info-row">
+          <span class="info-label">Guía</span>
+          <span class="info-value">Mauricio Alejandro Holguín Bonilla</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Punto de encuentro</span>
+          <span class="info-value">Olímpica, Carrera 10 con Calle 11 Sur.</span>
+        </div>
+      </div>
+      <details class="recom-details">
+        <summary class="recom-summary">
+          <span>Recomendaciones</span>
+          <svg class="recom-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <ul class="recom-list">
+          <li class="recom-time"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Llegar 15 minutos antes de la hora programada</li>
+          <li class="recom-subhead">Para los caminantes</li>
+          <li>Kit personal: agua, bloqueador solar, gorra o sombrero, ropa cómoda</li>
+          <li>Calzado cerrado con buena suela</li>
+          <li>Impermeable ligero, especialmente por el clima cambiante de Bogotá</li>
+          <li>Medicamentos personales</li>
+          <li>Documento de identificación y contacto de emergencia</li>
+          <li>Para una experiencia familiar, establece desde el comienzo reglas sencillas de convivencia</li>
+          <li class="recom-subhead">Para los perritos</li>
+          <li>Llevar perros con buen estado de salud y esquema sanitario al día</li>
+          <li>Identificación visible: placa con teléfono y, si es posible, microchip</li>
+          <li>Arnés cómodo y correa segura; evitar correas extensibles durante la caminata grupal</li>
+          <li>Llevar agua suficiente y recipiente individual</li>
+          <li>Bolsas para recoger inmediatamente las heces</li>
+          <li>Premios pequeños para reforzar conductas tranquilas</li>
+          <li>No llevar perros enfermos, en recuperación, muy nerviosos o con antecedentes recientes de agresividad sin valoración previa</li>
+          <li>Evitar que los perros coman residuos, plantas desconocidas o elementos encontrados cerca del río</li>
+        </ul>
+      </details>
+    </div>
   </div>
 
   <div class="grid">
