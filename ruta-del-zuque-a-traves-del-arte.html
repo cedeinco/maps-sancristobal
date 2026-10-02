@@ -119,6 +119,21 @@
 .gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
 .gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 @media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
+
+.info-card { padding: 18px 20px; margin-bottom: 20px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 860px) { .info-grid { grid-template-columns: 1fr; } }
+.info-col { display: flex; flex-direction: column; gap: 14px; }
+.info-row { display: flex; flex-direction: column; gap: 3px; }
+.info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.info-value { font-size: 14px; line-height: 1.45; }
+.recom-details { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); align-self: start; }
+.recom-summary { cursor: pointer; list-style: none; padding: 12px 14px; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; user-select: none; color: var(--green-deep, var(--green)); }
+.recom-summary::-webkit-details-marker { display: none; }
+.recom-chevron { flex: none; color: var(--text-muted); transition: transform 0.15s ease; }
+.recom-details[open] .recom-chevron { transform: rotate(180deg); }
+.recom-list { margin: 0; padding: 4px 16px 14px 32px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.recom-list li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -158,8 +173,39 @@
     <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">5.0 <small>km</small></span></div>
     <div class="stat"><span class="stat-label">Desnivel</span><span class="stat-value">+235 <small>m</small></span></div>
     <div class="stat difficulty"><span class="stat-label">Dificultad</span><span class="stat-value">Moderada</span></div>
-    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">1.5 <small>h</small></span></div>
+    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">6 <small>h</small></span></div>
     <div class="stat"><span class="stat-label">Tipo</span><span class="stat-value">Ida y vuelta</span></div>
+  </div>
+
+  <div class="card info-card">
+    <div class="info-grid">
+      <div class="info-col">
+        <div class="info-row">
+          <span class="info-label">Guía</span>
+          <span class="info-value">Mario Shneyder Ossa Torres</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Punto de encuentro</span>
+          <span class="info-value">Bus: Portal 20 de Julio, salida principal.<br>Inicio de la ruta: Cerro del Zuque.</span>
+        </div>
+      </div>
+      <details class="recom-details">
+        <summary class="recom-summary">
+          <span>Recomendaciones</span>
+          <svg class="recom-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <ul class="recom-list">
+          <li>Llevar ropa cómoda para el frío (chaqueta térmica, saco, impermeable en caso de lluvia)</li>
+          <li>Zapatillas de senderismo, gorra para el sol, bloqueador solar y guantes (opcional)</li>
+          <li>Estar en buen estado físico: hay tramos de ascenso y descenso que lo requieren</li>
+          <li>Llegar desayunado o llevar un desayuno ligero</li>
+          <li>Llevar agua potable</li>
+          <li>Duración de la actividad: de 4 a 6 horas</li>
+          <li>Mascotas: no llevar, por la agresividad de perros de la zona</li>
+          <li>Permisos de ingreso: se requiere carta de la Alcaldía para solicitar el ingreso al Sendero, a nombre de Juan Diego Molano, administrador del Cerro Zuque (parqueserraniazuque@ambientebogota.gov.co)</li>
+        </ul>
+      </details>
+    </div>
   </div>
 
   <div class="grid">
