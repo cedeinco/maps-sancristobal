@@ -118,6 +118,23 @@
 .gmap-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
 .gmap-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 @media (max-width: 560px) { .gmap-embed { aspect-ratio: 4 / 5; } }
+
+.info-card { padding: 18px 20px; margin-bottom: 20px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 860px) { .info-grid { grid-template-columns: 1fr; } }
+.info-col { display: flex; flex-direction: column; gap: 14px; }
+.info-row { display: flex; flex-direction: column; gap: 3px; }
+.info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.info-value { font-size: 14px; line-height: 1.45; }
+.recom-details { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); align-self: start; }
+.recom-summary { cursor: pointer; list-style: none; padding: 12px 14px; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; user-select: none; color: var(--green-deep, var(--green)); }
+.recom-summary::-webkit-details-marker { display: none; }
+.recom-chevron { flex: none; color: var(--text-muted); transition: transform 0.15s ease; }
+.recom-details[open] .recom-chevron { transform: rotate(180deg); }
+.recom-list { margin: 0; padding: 4px 16px 14px 32px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.recom-list li { margin-bottom: 6px; }
+.recom-time { display: flex; align-items: center; gap: 7px; list-style: none; margin-left: -20px; margin-bottom: 10px !important; font-weight: 700; color: var(--text); }
+.recom-time svg { flex: none; color: var(--accent); }
 </style>
 </head>
 <body>
@@ -154,18 +171,48 @@
   </div>
 
   <div class="stats">
-    <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">3.0 <small>km</small></span></div>
+    <div class="stat"><span class="stat-label">Distancia</span><span class="stat-value">3.29 <small>km</small></span></div>
     <div class="stat"><span class="stat-label">Desnivel</span><span class="stat-value">+10 <small>m</small></span></div>
     <div class="stat difficulty"><span class="stat-label">Dificultad</span><span class="stat-value">Fácil</span></div>
-    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">50 <small>min</small></span></div>
+    <div class="stat"><span class="stat-label">Duración</span><span class="stat-value">3h 45 <small>min</small></span></div>
     <div class="stat"><span class="stat-label">Tipo</span><span class="stat-value">Ida</span></div>
+  </div>
+
+  <div class="card info-card">
+    <div class="info-grid">
+      <div class="info-col">
+        <div class="info-row">
+          <span class="info-label">Guía</span>
+          <span class="info-value">Diana Marcela González Garzón</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Punto de encuentro</span>
+          <span class="info-value">Parque Metropolitano San Cristóbal</span>
+        </div>
+      </div>
+      <details class="recom-details">
+        <summary class="recom-summary">
+          <span>Recomendaciones</span>
+          <svg class="recom-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <ul class="recom-list">
+          <li class="recom-time"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Llegar 15 minutos antes de la hora programada</li>
+          <li>Llevar ropa cómoda, zapatos de buen agarre</li>
+          <li>Bloqueador solar, gorra, capa para la lluvia y/o sombrilla</li>
+          <li>Hidratación</li>
+          <li>Documentos y medicamentos personales</li>
+          <li>Excelente actitud</li>
+          <li>Se recomienda no llevar mascotas</li>
+        </ul>
+      </details>
+    </div>
   </div>
 
   <div class="grid">
     <div class="card">
       <div class="card-head">
         <span class="card-title">Trazado del sendero</span>
-        <span class="card-hint">11 puntos de referencia</span>
+        <span class="card-hint">10 puntos de referencia</span>
       </div>
       <div class="map-figure">
         <svg class="map-svg" viewBox="0 0 620 416.4" role="img" aria-label="Mapa del recorrido San Cristóbal: Huellas de la Historia con sus puntos de referencia">
@@ -205,10 +252,8 @@
 <circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="0" r="5.5" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="0.8" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">8</text></g>
 <g class="wp wp-poi" data-wp="9" transform="translate(216.7,179.9)" tabindex="0" role="button" aria-label="9. Velódromo Santiago Trujillo Gómez">
 <circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="0" r="5.5" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="0.8" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">9</text></g>
-<g class="wp wp-poi" data-wp="10" transform="translate(241.0,67.5)" tabindex="0" role="button" aria-label="10. Salida del velódromo">
-<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><circle cx="0" cy="0" r="5.5" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="0" cy="0" r="0.8" fill="currentColor"/></g><text class="wp-num" y="-15" text-anchor="middle">10</text></g>
-<g class="wp wp-end" data-wp="11" transform="translate(52.9,143.8)" tabindex="0" role="button" aria-label="11. Iglesia de San Cristóbal">
-<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><path d="M-3 7 L-3 -7 L4 -4.5 L-3 -2" fill="currentColor" stroke="none"/></g><text class="wp-num" y="-15" text-anchor="middle">11</text></g>
+<g class="wp wp-end" data-wp="10" transform="translate(241.0,67.5)" tabindex="0" role="button" aria-label="10. Salida del velódromo">
+<circle class="wp-halo" r="13"/><circle class="wp-dot" r="8.5"/><g class="wp-icon"><path d="M-3 7 L-3 -7 L4 -4.5 L-3 -2" fill="currentColor" stroke="none"/></g><text class="wp-num" y="-15" text-anchor="middle">10</text></g>
   <g transform="translate(568.0,46)">
     <line class="compass-line" x1="0" y1="14" x2="0" y2="-14" />
     <path class="compass-line" d="M0,-14 L-4,-6 M0,-14 L4,-6" fill="none" />
@@ -260,7 +305,6 @@
 <circle class="ec-wp" data-wp="8" cx="544.5" cy="164.2" r="4.5"/>
 <circle class="ec-wp" data-wp="9" cx="643.3" cy="120.5" r="4.5"/>
 <circle class="ec-wp" data-wp="10" cx="725.3" cy="187.2" r="4.5"/>
-<circle class="ec-wp" data-wp="11" cx="895.8" cy="186.0" r="4.5"/>
   <text class="elev-peak-label" x="65" y="10" text-anchor="middle">San Cristóbal · 2633 m</text>
   <text class="elev-axis-label" x="0" y="202">0 km</text>
   <text class="elev-axis-label" x="900" y="202" text-anchor="end">3.0 km</text>
@@ -367,22 +411,12 @@
 </li>
 <li class="wp-item" data-wp="10">
 <button class="wp-item-toggle" data-wp="10" aria-expanded="false" aria-controls="wp-panel-10">
-<span class="wp-item-num cat-poi">10</span>
-<span class="wp-item-body"><span class="wp-item-title">Salida del velódromo</span><span class="wp-item-meta">Punto de interés · 2607 m s. n. m.</span></span>
+<span class="wp-item-num cat-end">10</span>
+<span class="wp-item-body"><span class="wp-item-title">Salida del velódromo</span><span class="wp-item-meta">Fin · 2607 m s. n. m.</span></span>
 <svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 <div class="wp-item-panel" id="wp-panel-10" hidden>
 <img src="Imagenes%20Mapas/SAN%20CRIST%C3%93BAL%20HUELLAS%20DE%20LA%20HISTORIA/Salida%20Vel%C3%B3dromo%20y%20fin%20del%20recorrido.jpg" alt="Salida del velódromo" loading="lazy">
-</div>
-</li>
-<li class="wp-item" data-wp="11">
-<button class="wp-item-toggle" data-wp="11" aria-expanded="false" aria-controls="wp-panel-11">
-<span class="wp-item-num cat-end">11</span>
-<span class="wp-item-body"><span class="wp-item-title">Iglesia de San Cristóbal</span><span class="wp-item-meta">Fin · 2607 m s. n. m.</span></span>
-<svg class="wp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
-<div class="wp-item-panel" id="wp-panel-11" hidden>
-<img src="Imagenes%20Mapas/SAN%20CRIST%C3%93BAL%20HUELLAS%20DE%20LA%20HISTORIA/Iglesia%20de%20San%20Crist%C3%B3bal.jpg" alt="Iglesia de San Cristóbal" loading="lazy">
 </div>
 </li>
         </ul>
